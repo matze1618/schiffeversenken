@@ -14,84 +14,36 @@ public class AnimationBlock {
         this.posY = y;
 
         generator = new Random();
-    };
+    }
 
     public void draw(){
         int randomColor = generator.nextInt(3);
-        int randomSymbol = generator.nextInt(19);
-        switch(randomColor){
-            case 0:
-                System.out.print(Main.ANSI_YELLOW);
-                break;
-            case 1:
-                System.out.print(Main.ANSI_YELLOW);
-                break;
-            case 2:
-                System.out.print(Main.ANSI_RED);
-                break;
+        int randomSymbol = generator.nextInt(20); //was 19
+        switch (randomColor) {
+            case 0, 1 -> System.out.print(Main.ANSI_YELLOW);
+            case 2 -> System.out.print(Main.ANSI_RED);
         }
 
-        switch(randomSymbol){
-            case 0:
-                System.out.print("؎" + Main.ANSI_RESET);
-                break;
-            case 1:
-                System.out.print("؏" + Main.ANSI_RESET);
-                break;
-            case 2:
-                System.out.print("߶" + Main.ANSI_RESET);
-                break;
-            case 3:
-                System.out.print("༚" + Main.ANSI_RESET);
-                break;
-            case 4:
-                System.out.print("༜" + Main.ANSI_RESET);
-                break;
-            case 5:
-                System.out.print("࿀" + Main.ANSI_RESET);
-                break;
-            case 6:
-                System.out.print("༞" + Main.ANSI_RESET);
-                break;
-            case 7:
-                System.out.print("࿏" + Main.ANSI_RESET);
-                break;
-            case 8:
-                System.out.print("࿏" + Main.ANSI_RESET);
-                break;
-            case 9:
-                System.out.print("℺" + Main.ANSI_RESET);
-                break;
-            case 10:
-                System.out.print("⅏" + Main.ANSI_RESET);
-                break;
-            case 11:
-                System.out.print("↜" + Main.ANSI_RESET);
-                break;
-            case 12:
-                System.out.print("↟" + Main.ANSI_RESET);
-                break;
-            case 13:
-                System.out.print("↭" + Main.ANSI_RESET);
-                break;
-            case 14:
-                System.out.print("↯" + Main.ANSI_RESET);
-                break;
-            case 15:
-                System.out.print("⇝" + Main.ANSI_RESET);
-                break;
-            case 16:
-                System.out.print("⌀" + Main.ANSI_RESET);
-                break;
-            case 17:
-                System.out.print("⌘" + Main.ANSI_RESET);
-                break;
-            case 18:
-                System.out.print("⌔" + Main.ANSI_RESET);
-                break;
-            case 19:
-                System.out.print("⌾" + Main.ANSI_RESET);
-                break;
+        switch (randomSymbol) {
+            case 0 -> System.out.print("؎" + Main.ANSI_RESET);
+            case 1 -> System.out.print("؏" + Main.ANSI_RESET);
+            case 2 -> System.out.print("߶" + Main.ANSI_RESET);
+            case 3 -> System.out.print("༚" + Main.ANSI_RESET);
+            case 4 -> System.out.print("༜" + Main.ANSI_RESET);
+            case 5 -> System.out.print("࿀" + Main.ANSI_RESET);
+            case 6 -> System.out.print("༞" + Main.ANSI_RESET);
+            case 7, 8 -> System.out.print("࿏" + Main.ANSI_RESET);
+            case 9 -> System.out.print("℺" + Main.ANSI_RESET);
+            case 10 -> System.out.print("⅏" + Main.ANSI_RESET);
+            case 11 -> System.out.print("↜" + Main.ANSI_RESET);
+            case 12 -> System.out.print("↟" + Main.ANSI_RESET);
+            case 13 -> System.out.print("↭" + Main.ANSI_RESET);
+            case 14 -> System.out.print("↯" + Main.ANSI_RESET);
+            case 15 -> System.out.print("⇝" + Main.ANSI_RESET);
+            case 16 -> System.out.print("⌀" + Main.ANSI_RESET);
+            case 17 -> System.out.print("⌘" + Main.ANSI_RESET);
+            case 18 -> System.out.print("⌔" + Main.ANSI_RESET);
+            case 19 -> System.out.print("⌾" + Main.ANSI_RESET);
         }
         if(frame > 27){
             active = false;

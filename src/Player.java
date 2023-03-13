@@ -98,30 +98,18 @@ public class Player {
         System.out.println("Spieler " + spielerNummer + ", gib deinen Namen ein!");
         String name = scan.next();
         System.out.println(name + ", gib deine Wunschfarbe, in der dein Name angezeigt werden soll, aus den Farben (rot, grün, gelb, blau, lila, cyan oder weiß) ein!");
+        scan.next();
         String colour = scan.next().toLowerCase();
-        switch (colour){
-            case "rot":
-                colour = Main.ANSI_RED;
-                break;
-            case "grün":
-                colour = Main.ANSI_RED;
-                break;
-            case "gelb":
-                colour = Main.ANSI_RED;
-                break;
-            case "blau":
-                colour = Main.ANSI_RED;
-                break;
-            case "lila":
-                colour = Main.ANSI_RED;
-                break;
-            case "cyan":
-                colour = Main.ANSI_RED;
-                break;
-            case "weiß":
-                colour = Main.ANSI_RED;
-                break;
-        }
+        colour = switch (colour) {
+            case "rot" -> Main.ANSI_RED;
+            case "grün" -> Main.ANSI_RED;
+            case "gelb" -> Main.ANSI_RED;
+            case "blau" -> Main.ANSI_RED;
+            case "lila" -> Main.ANSI_RED;
+            case "cyan" -> Main.ANSI_RED;
+            case "weiß" -> Main.ANSI_RED;
+            default -> scan.next().toLowerCase();
+        };
         setName(name, colour);
     }
 
@@ -397,15 +385,9 @@ public class Player {
         }
         System.out.println("Ins Wasser geschossen!");
         switch (powerup) {
-            case 1:
-                System.out.println("Du hast einen Big Shot als nächsten Schuss!");
-                break;
-            case 2:
-                System.out.println("Du hast einen Line Shot als nächsten Schuss!");
-                break;
-            case 3:
-                System.out.println("Du hast ein Radar bekommen!");
-                break;
+            case 1 -> System.out.println("Du hast einen Big Shot als nächsten Schuss!");
+            case 2 -> System.out.println("Du hast einen Line Shot als nächsten Schuss!");
+            case 3 -> System.out.println("Du hast ein Radar bekommen!");
         }
     }
 

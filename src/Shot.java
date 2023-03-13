@@ -28,10 +28,7 @@ public class Shot {
         for(int i = 0; i < spielfeld.addCounter; i++){
             if(spielfeld.schiffe[i].isAtToBool(xCoord, yCoord)){
                 spielfeld.schiffe[i].getHit(spielfeld);
-                if(!spielfeld.schiffe[i].isArmored() || spielfeld.schiffe[i].getLeben() < spielfeld.schiffe[i].getLaenge()-1) {
-                    return true;
-                }
-                else{return false;}
+                return !spielfeld.schiffe[i].isArmored() || spielfeld.schiffe[i].getLeben() < spielfeld.schiffe[i].getLaenge() - 1;
             }
         }
         return false;

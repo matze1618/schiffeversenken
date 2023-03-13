@@ -11,7 +11,7 @@ public class Ship {
     }
 
     private int leben;
-    private boolean armored;
+    private final boolean armored;
     //
     Ship(int xCoord, int yCoord, int laenge, String orientation, boolean armored){
         this.xCoord = xCoord;

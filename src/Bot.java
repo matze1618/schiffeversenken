@@ -3,8 +3,8 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Bot extends Player{
-    private String name;
-    private Shot[] botSchuesse = new Shot[700];
+    private final String name;
+    private final Shot[] botSchuesse = new Shot[700]; //was initially not final
 
     //Bot(){};
 
@@ -64,15 +64,12 @@ public class Bot extends Player{
         if(!trySchuss(enemy, x + 1, y)) {
             return false;
         }
-        if(!trySchuss(enemy, x, y + 1)) {
-            return false;
-        }
-        return true;
+        return trySchuss(enemy, x, y + 1);
     }
 
     @Override
     public boolean randomPlaceShip(Field enemy) throws InterruptedException {
-        int yCoord;
+        int yCoord; //TODO: still needed?
         if (Main.status == Main.Status.PICKPHASEAD) {
             System.arraycopy(schiffeAD, 0, schiffe, 0, schiffeAD.length);
         }

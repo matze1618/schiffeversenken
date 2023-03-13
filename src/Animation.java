@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Animation {
 
     public int frame = 0;
@@ -12,7 +14,7 @@ public class Animation {
     Animation(Ship schiff, Field spielfeld){
         this.active = true;
 
-        if(schiff.getOrientation() == "H") {
+        if(Objects.equals(schiff.getOrientation(), "H")) {
             for (int i = 0; i < schiff.getLaenge() + 2; i++) {
                 AnimationBlock animationBlock = new AnimationBlock(schiff.getXCoord()+i-1, schiff.getYCoord() - 1);
                 animationBlocks[aniCounter] = animationBlock;
@@ -28,7 +30,7 @@ public class Animation {
 
             }
         }
-        else if(schiff.getOrientation() == "V") {
+        else if(Objects.equals(schiff.getOrientation(), "V")) {
             for (int i = 0; i < schiff.getLaenge() + 2; i++) {
                 AnimationBlock animationBlock = new AnimationBlock(schiff.getXCoord() - 1, schiff.getYCoord() + i - 1);
                 animationBlocks[aniCounter] = animationBlock;

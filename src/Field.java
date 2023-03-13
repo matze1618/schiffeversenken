@@ -174,91 +174,81 @@ public class Field {
             System.out.print("\u007C");
             if (Main.status == Main.Status.ATCK) {
                 switch (j) {
-                    case 0:
-                        System.out.print("   Noch zuzerstörende Schiffe:");
-                        break;
-                    case 2:
+                    case 0 -> System.out.print("   Noch zuzerstörende Schiffe:");
+                    case 2 -> {
                         System.out.print("    ");
                         for (int i = 0; i < shipsAliveByLength(5); i++) {
                             System.out.print("╠■■■■■■■■■■■■■▶ ");
                         }
-                        break;
-                    case 4:
+                    }
+                    case 4 -> {
                         System.out.print("    ");
-
                         for (int i = 0; i < shipsAliveByLength(4); i++) {
                             System.out.print("╠■■■■■■■■■■▶ ");
                         }
-                        break;
-                    case 6:
+                    }
+                    case 6 -> {
                         System.out.print("    ");
-
                         for (int i = 0; i < shipsAliveByLength(3); i++) {
                             System.out.print("╠■■■■■■■▶ ");
                         }
-                        break;
-                    case 8:
+                    }
+                    case 8 -> {
                         System.out.print("    ");
-
                         for (int i = 0; i < shipsAliveByLength(2); i++) {
                             System.out.print("╠■■■■▶ ");
                         }
                         for (int i = 0; i < shipsAliveByLength(1); i++) {
                             System.out.print("╠■▶ ");
                         }
-                        break;
+                    }
                 }
             }
             if (Main.status == Main.Status.ATCKAD) {
                 switch (j) {
-                    case 0:
-                        System.out.print("   Noch zuzerstörende Schiffe:");
-                        break;
-                    case 2:
+                    case 0 -> System.out.print("   Noch zuzerstörende Schiffe:");
+                    case 2 -> {
                         System.out.print("    ");
                         for (int i = 0; i < shipsAliveByLength(6); i++) {
                             System.out.print("╠■■■■■■■■■■■■■■■■▶ ");
                         }
-                        break;
-                    case 4:
+                    }
+                    case 4 -> {
                         System.out.print("    ");
-
                         for (int i = 0; i < shipsAliveByLength(5); i++) {
                             System.out.print("╠■■■■■■■■■■■■■▶ ");
                         }
-                        break;
-                    case 6:
+                    }
+                    case 6 -> {
                         System.out.print("    ");
-
                         for (int i = 0; i < shipsAliveByLength(4); i++) {
                             if (i == 0 && !schiffe[6].zerstoert()) {
                                 System.out.print(Main.ANSI_BG_WHITE + "╠■■■■■■■■■■▶" + Main.ANSI_RESET + " ");
                                 i++;
                             }
-                            if(i < shipsAliveByLength(4)) {
+                            if (i < shipsAliveByLength(4)) {
                                 System.out.print("╠■■■■■■■■■■▶ ");
                             }
                         }
-                        break;
-                    case 8:
+                    }
+                    case 8 -> {
                         System.out.print("    ");
-
                         for (int i = 0; i < shipsAliveByLength(3); i++) {
                             if (i == 0 && !schiffe[4].zerstoert()) {
                                 System.out.print(Main.ANSI_BG_WHITE + "╠■■■■■■■▶" + Main.ANSI_RESET + " ");
                                 i++;
                             }
-                            if(i < shipsAliveByLength(3)) {
+                            if (i < shipsAliveByLength(3)) {
                                 System.out.print("╠■■■■■■■▶ ");
                             }
                         }
-                        break;
-                    case 10:
+                    }
+                    case 10 -> {
                         System.out.print("    ");
                         for (int i = 0; i < shipsAliveByLength(2); i++) {
                             System.out.print("╠■■■■▶ ");
                         }
-                        break;
+                    }
                 }
             }
             System.out.println();
@@ -390,8 +380,8 @@ public class Field {
 
     int shipsAliveByLength(int laenge){
         int counter = 0;
-        for(int i = 0; i < schiffe.length; i++){
-            if(schiffe[i].getLaenge() == laenge && !schiffe[i].zerstoert()){
+        for (Ship ship : schiffe) {
+            if (ship.getLaenge() == laenge && !ship.zerstoert()) {
                 counter++;
             }
         }
@@ -399,21 +389,21 @@ public class Field {
     }
 
     void shotsInBarrier() {
-        for(int i=0; i < schiffe.length; i++) {
-            if(schiffe[i].zerstoert()) {
-                if("H".equalsIgnoreCase(schiffe[i].getOrientation())) {
-                    placeShotAutomated(schiffe[i].getXCoord() - 1, schiffe[i].getYCoord());
-                    placeShotAutomated(schiffe[i].getXCoord() + schiffe[i].getLaenge(), schiffe[i].getYCoord());
-                    for (int j=0; j < schiffe[i].getLaenge(); j++){
-                        placeShotAutomated(schiffe[i].getXCoord() + j, schiffe[i].getYCoord() + 1);
-                        placeShotAutomated(schiffe[i].getXCoord() + j, schiffe[i].getYCoord() - 1);
+        for (Ship ship : schiffe) {
+            if (ship.zerstoert()) {
+                if ("H".equalsIgnoreCase(ship.getOrientation())) {
+                    placeShotAutomated(ship.getXCoord() - 1, ship.getYCoord());
+                    placeShotAutomated(ship.getXCoord() + ship.getLaenge(), ship.getYCoord());
+                    for (int j = 0; j < ship.getLaenge(); j++) {
+                        placeShotAutomated(ship.getXCoord() + j, ship.getYCoord() + 1);
+                        placeShotAutomated(ship.getXCoord() + j, ship.getYCoord() - 1);
                     }
                 } else {
-                    placeShotAutomated(schiffe[i].getXCoord(), schiffe[i].getYCoord() - 1);
-                    placeShotAutomated(schiffe[i].getXCoord(), schiffe[i].getYCoord() + schiffe[i].getLaenge());
-                    for (int j=0; j < schiffe[i].getLaenge(); j++){
-                        placeShotAutomated(schiffe[i].getXCoord() + 1, schiffe[i].getYCoord() + j);
-                        placeShotAutomated(schiffe[i].getXCoord() - 1, schiffe[i].getYCoord() + j);
+                    placeShotAutomated(ship.getXCoord(), ship.getYCoord() - 1);
+                    placeShotAutomated(ship.getXCoord(), ship.getYCoord() + ship.getLaenge());
+                    for (int j = 0; j < ship.getLaenge(); j++) {
+                        placeShotAutomated(ship.getXCoord() + 1, ship.getYCoord() + j);
+                        placeShotAutomated(ship.getXCoord() - 1, ship.getYCoord() + j);
                     }
                 }
 

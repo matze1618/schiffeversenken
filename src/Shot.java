@@ -1,20 +1,18 @@
 public class Shot {
-    private final int xCoord;
-    private final int yCoord;
+    private final Coordinate position;
     private final boolean placedManually;
 
     Shot(int x, int y, boolean placedManually){
-        xCoord = x;
-        yCoord = y;
+        position = new Coordinate(x, y);
         this.placedManually = placedManually;
     }
 
     public int getxCoord() {
-        return xCoord;
+        return position.getX();
     }
 
     public int getyCoord() {
-        return yCoord;
+        return position.getY();
     }
 
     public boolean getPlacedManually() {
@@ -23,16 +21,16 @@ public class Shot {
 
     public boolean checkHit(Field spielfeld) throws InterruptedException {
         for(int i = 0; i < spielfeld.addCounter; i++){
-            if(spielfeld.schiffe[i].isAtToBool(xCoord, yCoord)){
-                spielfeld.schiffe[i].getHit(spielfeld);
-                return !spielfeld.schiffe[i].isArmored() || spielfeld.schiffe[i].getLeben() < spielfeld.schiffe[i].getLaenge() - 1;
+            if(spielfeld.ships[i].isAtToBool(position.getX(), position.getY())){
+                spielfeld.ships[i].getHit(spielfeld);
+                return !spielfeld.ships[i].isArmored() || spielfeld.ships[i].getLives() < spielfeld.ships[i].getSize() - 1;
             }
         }
         return false;
     }
 
     public boolean isAt(int x, int y){
-        return x == xCoord && y == yCoord;
+        return x == position.getX() && y == position.getY();
     }
 }
 //mergemania

@@ -34,37 +34,37 @@ public class Bot extends Player{
 
     public boolean inputTryBotFailureException(Field enemy) throws InterruptedException, BotFailureException {
         int shipToSink = shipToSinkIndex(enemy);
-        if(shipToSink == enemy.schiffe.length) {
+        if(shipToSink == enemy.ships.length) {
             Random random = new Random();
-            return trySchuss(enemy, random.nextInt(enemy.getWidth()), random.nextInt(enemy.getHeight()));
+            return tryShot(enemy, random.nextInt(enemy.getWidth()), random.nextInt(enemy.getHeight()));
         } else {
             int lastHit = getLastHit(enemy, shipToSink);
-            return smartSchuss(enemy, enemy.schuesse[lastHit].getxCoord(), enemy.schuesse[lastHit].getyCoord());
+            return smartShot(enemy, enemy.shots[lastHit].getxCoord(), enemy.shots[lastHit].getyCoord());
         }
     }
 
     public int shipToSinkIndex(Field enemy){
-        int result = enemy.schiffe.length;
-        for(int i=0; i < enemy.schiffe.length; i++) {
-            if(!enemy.schiffe[i].zerstoert() && enemy.schiffe[i].getLaenge() > enemy.schiffe[i].getLeben()) {
+        int result = enemy.ships.length;
+        for(int i = 0; i < enemy.ships.length; i++) {
+            if(!enemy.ships[i].destroyed() && enemy.ships[i].getSize() > enemy.ships[i].getLives()) {
                 return i;
             }
         }
         return result;
     }
 
-    public boolean smartSchuss(Field enemy, int x, int y) throws InterruptedException {
+    public boolean smartShot(Field enemy, int x, int y) throws InterruptedException {
         //TODO: Das geht schöner!
-        if(!trySchuss(enemy, x - 1, y)) {
+        if(!tryShot(enemy, x - 1, y)) {
             return false;
         }
-        if(!trySchuss(enemy, x, y - 1)) {
+        if(!tryShot(enemy, x, y - 1)) {
             return false;
         }
-        if(!trySchuss(enemy, x + 1, y)) {
+        if(!tryShot(enemy, x + 1, y)) {
             return false;
         }
-        return trySchuss(enemy, x, y + 1);
+        return tryShot(enemy, x, y + 1);
     }
 
     @Override
@@ -88,13 +88,13 @@ public class Bot extends Player{
                 orientation = "V";
             }
 
-            schiffe[9 - spielfeld.addCounter].setShip(x - 1, y, orientation.toUpperCase());
+            schiffe[9 - field.addCounter].setShip(x - 1, y, orientation.toUpperCase());
             //TODO: Geht das schöner?
-            if (spielfeld.isAllowed(schiffe[9 - spielfeld.addCounter])) {
-                spielfeld.placeShip(x - 1, y, orientation, schiffe[9 - spielfeld.addCounter].getLaenge(), schiffe[9-spielfeld.addCounter].isArmored());
-                spielfeld.addCounter++;
-                if (spielfeld.addCounter == 10) {
-                    spielfeld.draw(true);
+            if (field.isAllowed(schiffe[9 - field.addCounter])) {
+                field.placeShip(x - 1, y, orientation, schiffe[9 - field.addCounter].getSize(), schiffe[9- field.addCounter].isArmored());
+                field.addCounter++;
+                if (field.addCounter == 10) {
+                    field.draw(true);
                     System.out.print("\033[H\033[2J");
                     System.out.flush();
                     System.out.println("Drücke ENTER um fortzufahren!");
@@ -104,9 +104,9 @@ public class Bot extends Player{
                         else{Main.status = Main.Status.ATCK;}
                         System.out.print("\033[H\033[2J");
                         System.out.flush();
-                        spielfeld.draw(true);
+                        field.draw(true);
                     } else {
-                        spielfeld.draw(true);
+                        field.draw(true);
                         TimeUnit.MILLISECONDS.sleep(1500);
                         System.out.print("\033[H\033[2J");
                         System.out.flush();
@@ -121,8 +121,8 @@ public class Bot extends Player{
     }
 
     public int getLastHit(Field enemy, int shipToSink) throws BotFailureException{
-        for(int i = enemy.schussCounter - 1; i >= 0; i--) {
-            if(enemy.schiffe[shipToSink].isAtToBool(enemy.schuesse[i].getxCoord(), enemy.schuesse[i].getyCoord())) {
+        for(int i = enemy.shotCounter - 1; i >= 0; i--) {
+            if(enemy.ships[shipToSink].isAtToBool(enemy.shots[i].getxCoord(), enemy.shots[i].getyCoord())) {
                 return i;
             }
         }
@@ -130,20 +130,20 @@ public class Bot extends Player{
     }
 
     @Override
-    public boolean trySchuss(Field enemy, int x, int yCoord) throws InterruptedException {
+    public boolean tryShot(Field enemy, int x, int yCoord) throws InterruptedException {
         if(x < 0 || x >= enemy.getWidth() || yCoord < 0 || yCoord >= enemy.getHeight()) {
             return true;
         }
-        for (int i = 0; i < enemy.schussCounter; i++) {
-            if (enemy.schuesse[i].isAt(x, yCoord)) {
+        for (int i = 0; i < enemy.shotCounter; i++) {
+            if (enemy.shots[i].isAt(x, yCoord)) {
                 return true;
             }
         }
         Shot schuss = new Shot(x, yCoord, true);
-        enemy.schuesse[enemy.schussCounter] = schuss;
-        enemy.schussCounter++;
+        enemy.shots[enemy.shotCounter] = schuss;
+        enemy.shotCounter++;
 
-        for(Ship schiff: enemy.schiffe) {
+        for(Ship schiff: enemy.ships) {
             if (schiff.isAtToBool(x, yCoord)) {
                 schiff.getHit(enemy);
                 enemy.draw(false);

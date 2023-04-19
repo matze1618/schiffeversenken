@@ -1,42 +1,40 @@
 import java.util.Objects;
 
 public class Animation {
-//    TODO: Was hat frame mal gemacht?
-//    public int frame = 0;
     public boolean active;
     private boolean lastFrame = false;
     AnimationBlock[] animationBlocks = new AnimationBlock[30];
     int animationCounter = 0;
 
-//    TODO: Brauche ich spielfeld irgendwo?
-    Animation(Ship schiff){ //, Field spielfeld){
+//    TODO: Brauche ich spielfeld irgendwo? => (Wo) wird an die Größe des Spielfelds angepasst?
+    Animation(Ship ship){ //, Field field){
         this.active = true;
 
-        if(Objects.equals(schiff.getOrientation(), "H")) {
-            for (int i = 0; i < schiff.getLaenge() + 2; i++) {
-                AnimationBlock animationBlock = new AnimationBlock(schiff.getXCoord()+i-1, schiff.getYCoord() - 1);
+        if(Objects.equals(ship.getOrientation(), "H")) {
+            for (int i = 0; i < ship.getSize() + 2; i++) {
+                AnimationBlock animationBlock = new AnimationBlock(ship.getXCoord()+i-1, ship.getYCoord() - 1);
                 animationBlocks[animationCounter] = animationBlock;
                 animationCounter++;
 
-                animationBlock = new AnimationBlock(schiff.getXCoord()+i-1, schiff.getYCoord());
+                animationBlock = new AnimationBlock(ship.getXCoord()+i-1, ship.getYCoord());
                 animationBlocks[animationCounter] = animationBlock;
                 animationCounter++;
 
-                animationBlock = new AnimationBlock(schiff.getXCoord()+i-1, schiff.getYCoord() + 1);
+                animationBlock = new AnimationBlock(ship.getXCoord()+i-1, ship.getYCoord() + 1);
                 animationBlocks[animationCounter] = animationBlock;
                 animationCounter++;
             }
-        } else if(Objects.equals(schiff.getOrientation(), "V")) {
-            for (int i = 0; i < schiff.getLaenge() + 2; i++) {
-                AnimationBlock animationBlock = new AnimationBlock(schiff.getXCoord() - 1, schiff.getYCoord() + i - 1);
+        } else if(Objects.equals(ship.getOrientation(), "V")) {
+            for (int i = 0; i < ship.getSize() + 2; i++) {
+                AnimationBlock animationBlock = new AnimationBlock(ship.getXCoord() - 1, ship.getYCoord() + i - 1);
                 animationBlocks[animationCounter] = animationBlock;
                 animationCounter++;
 
-                animationBlock = new AnimationBlock(schiff.getXCoord(), schiff.getYCoord() + i - 1);
+                animationBlock = new AnimationBlock(ship.getXCoord(), ship.getYCoord() + i - 1);
                 animationBlocks[animationCounter] = animationBlock;
                 animationCounter++;
 
-                animationBlock = new AnimationBlock(schiff.getXCoord() + 1, schiff.getYCoord() + i - 1);
+                animationBlock = new AnimationBlock(ship.getXCoord() + 1, ship.getYCoord() + i - 1);
                 animationBlocks[animationCounter] = animationBlock;
                 animationCounter++;
             }

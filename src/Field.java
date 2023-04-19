@@ -5,16 +5,16 @@ public class Field {
     private int width = 10;
     private int height = 10;
     boolean showAnimation = false;
-    Ship[] schiffe;
+    Ship[] ships;
     int addCounter = 0;
-    Shot[] schuesse;
-    int schussCounter = 0;
+    Shot[] shots;
+    int shotCounter = 0;
     Animation[] animations;
     int aniCounter = 0;
 
     public Field() {
-        this.schiffe = new Ship[10];
-        this.schuesse = new Shot[150];
+        this.ships = new Ship[10];
+        this.shots = new Shot[150];
         animations = new Animation[60];
     }
 
@@ -74,16 +74,16 @@ public class Field {
 
                 if(!isRendered) {
                     for (int u = 0; u < addCounter; u++) {
-                        if ((showShips && !schiffe[u].zerstoert()) || (!showShips && schiffe[u].zerstoert())) {
-                            if ((!showShips && schiffe[u].zerstoert())) {
+                        if ((showShips && !ships[u].destroyed()) || (!showShips && ships[u].destroyed())) {
+                            if ((!showShips && ships[u].destroyed())) {
                                 System.out.print(Main.ANSI_RED);
                             }
-                            if (schiffe[u].getLaenge() > 1) {
-                                switch (schiffe[u].isAt(i, j)) {
+                            if (ships[u].getSize() > 1) {
+                                switch (ships[u].isAt(i, j)) {
                                     case 0:
                                         break;
                                     case 1:
-                                        if (schiffe[u].getLaenge() == 5 || schiffe[u].getLaenge() == 3) {
+                                        if (ships[u].getSize() == 5 || ships[u].getSize() == 3) {
                                             System.out.print(" ▲ ");
                                         } else {
                                             System.out.print(" ▲ ");
@@ -91,7 +91,7 @@ public class Field {
                                         isRendered = true;
                                         break;
                                     case 2:
-                                        if (schiffe[u].getLaenge() == 5 || schiffe[u].getLaenge() == 3) {
+                                        if (ships[u].getSize() == 5 || ships[u].getSize() == 3) {
                                             System.out.print(" \u2588 ");
                                         } else {
                                             System.out.print(" \u2588 ");
@@ -103,7 +103,7 @@ public class Field {
                                         isRendered = true;
                                         break;
                                     case 4:
-                                        if (schiffe[u].getLaenge() == 5 || schiffe[u].getLaenge() == 3) {
+                                        if (ships[u].getSize() == 5 || ships[u].getSize() == 3) {
                                             System.out.print("╠■■");
                                         } else {
                                             System.out.print("╠■■");
@@ -111,7 +111,7 @@ public class Field {
                                         isRendered = true;
                                         break;
                                     case 5:
-                                        if (schiffe[u].getLaenge() == 5 || schiffe[u].getLaenge() == 3) {
+                                        if (ships[u].getSize() == 5 || ships[u].getSize() == 3) {
                                             System.out.print("■■■");
                                         } else {
                                             System.out.print("■■■");
@@ -119,7 +119,7 @@ public class Field {
                                         isRendered = true;
                                         break;
                                     case 6:
-                                        if (schiffe[u].getLaenge() == 5 || schiffe[u].getLaenge() == 3) {
+                                        if (ships[u].getSize() == 5 || ships[u].getSize() == 3) {
                                             System.out.print("■■▶");
                                         } else {
                                             System.out.print("■■▶");
@@ -127,12 +127,12 @@ public class Field {
                                         isRendered = true;
                                         break;
                                 }
-                            } else if (schiffe[u].isAtToBool(i, j)) {
+                            } else if (ships[u].isAtToBool(i, j)) {
                                 System.out.print("╠■▶");
                                 isRendered = true;
                             }
 
-                            if ((!showShips && schiffe[u].zerstoert())) {
+                            if ((!showShips && ships[u].destroyed())) {
                                 System.out.print(Main.ANSI_RESET);
                             }
                         }
@@ -140,13 +140,13 @@ public class Field {
                 }
 
 
-                for (int o = 0; o < schussCounter; o++) {
-                    if (schuesse[o].isAt(i, j) && !isRendered) {
+                for (int o = 0; o < shotCounter; o++) {
+                    if (shots[o].isAt(i, j) && !isRendered) {
                         for (int u = 0; u < addCounter; u++) {
-                            if (schiffe[u].isAtToBool(i, j) && !isRendered && (schiffe[u].getLeben() < schiffe[u].getLaenge() - 1 || (!schiffe[u].isArmored()))) {
+                            if (ships[u].isAtToBool(i, j) && !isRendered && (ships[u].getLives() < ships[u].getSize() - 1 || (!ships[u].isArmored()))) {
                                 System.out.print(Main.ANSI_RED + " X " + Main.ANSI_RESET);
                                 isRendered = true;
-                            } else if (!schuesse[o].getPlacedManually() && !isRendered) {
+                            } else if (!shots[o].getPlacedManually() && !isRendered) {
                                 System.out.print(Main.ANSI_CYAN + " X " + Main.ANSI_RESET);
                                 isRendered = true;
                             }
@@ -214,7 +214,7 @@ public class Field {
                     case 6 -> {
                         System.out.print("    ");
                         for (int i = 0; i < shipsAliveByLength(4); i++) {
-                            if (i == 0 && !schiffe[6].zerstoert()) {
+                            if (i == 0 && !ships[6].destroyed()) {
                                 System.out.print(Main.ANSI_BG_WHITE + "╠■■■■■■■■■■▶" + Main.ANSI_RESET + " ");
                                 i++;
                             }
@@ -226,7 +226,7 @@ public class Field {
                     case 8 -> {
                         System.out.print("    ");
                         for (int i = 0; i < shipsAliveByLength(3); i++) {
-                            if (i == 0 && !schiffe[4].zerstoert()) {
+                            if (i == 0 && !ships[4].destroyed()) {
                                 System.out.print(Main.ANSI_BG_WHITE + "╠■■■■■■■▶" + Main.ANSI_RESET + " ");
                                 i++;
                             }
@@ -265,7 +265,7 @@ public class Field {
 
 
     void placeShip(int x, int y, String orientation, int length, boolean armored) {
-        schiffe[addCounter] = new Ship(x, y, length, orientation, armored);
+        ships[addCounter] = new Ship(x, y, length, orientation, armored);
     }
 
     int getWidth () {
@@ -278,7 +278,7 @@ public class Field {
 
     public boolean isClear (Ship schiff){
         for (int i = 0; i < addCounter; i++) {
-            if (schiffe[i].isBlocked(schiff)) {
+            if (ships[i].isBlocked(schiff)) {
                 return false;
             }
         }
@@ -345,9 +345,9 @@ public class Field {
     }
 
     boolean isAllowed (Ship schiff){
-        if ("H".equalsIgnoreCase(schiff.getOrientation()) && ((schiff.getXCoord() >= 0) && (schiff.getXCoord() <= width) && (schiff.getXCoord() + schiff.getLaenge() <= width) && (schiff.getYCoord() >= 0) && (schiff.getYCoord() < height))) {
+        if ("H".equalsIgnoreCase(schiff.getOrientation()) && ((schiff.getXCoord() >= 0) && (schiff.getXCoord() <= width) && (schiff.getXCoord() + schiff.getSize() <= width) && (schiff.getYCoord() >= 0) && (schiff.getYCoord() < height))) {
             return isClear(schiff);
-        } else if("V".equalsIgnoreCase(schiff.getOrientation()) && ((schiff.getYCoord() >= 0) && (schiff.getYCoord() <= height) && (schiff.getYCoord() + schiff.getLaenge() <= height) && (schiff.getXCoord() >= 0) && (schiff.getXCoord() < width))) {
+        } else if("V".equalsIgnoreCase(schiff.getOrientation()) && ((schiff.getYCoord() >= 0) && (schiff.getYCoord() <= height) && (schiff.getYCoord() + schiff.getSize() <= height) && (schiff.getXCoord() >= 0) && (schiff.getXCoord() < width))) {
             return isClear(schiff);
         } else {
             return false;
@@ -358,7 +358,7 @@ public class Field {
         if (!Main.gameOver) {
             Main.gameOver = true;
             for (int i = 0; i < addCounter; i++) {
-                if (!schiffe[i].zerstoert()) {
+                if (!ships[i].destroyed()) {
                     Main.gameOver = false;
                 }
             }
@@ -371,8 +371,8 @@ public class Field {
 
     int shipsAliveByLength(int laenge){
         int counter = 0;
-        for (Ship ship : schiffe) {
-            if (ship.getLaenge() == laenge && !ship.zerstoert()) {
+        for (Ship ship : ships) {
+            if (ship.getSize() == laenge && !ship.destroyed()) {
                 counter++;
             }
         }
@@ -380,19 +380,19 @@ public class Field {
     }
 
     void shotsInBarrier() {
-        for (Ship ship : schiffe) {
-            if (ship.zerstoert()) {
+        for (Ship ship : ships) {
+            if (ship.destroyed()) {
                 if ("H".equalsIgnoreCase(ship.getOrientation())) {
                     placeShotAutomated(ship.getXCoord() - 1, ship.getYCoord());
-                    placeShotAutomated(ship.getXCoord() + ship.getLaenge(), ship.getYCoord());
-                    for (int j = 0; j < ship.getLaenge(); j++) {
+                    placeShotAutomated(ship.getXCoord() + ship.getSize(), ship.getYCoord());
+                    for (int j = 0; j < ship.getSize(); j++) {
                         placeShotAutomated(ship.getXCoord() + j, ship.getYCoord() + 1);
                         placeShotAutomated(ship.getXCoord() + j, ship.getYCoord() - 1);
                     }
                 } else {
                     placeShotAutomated(ship.getXCoord(), ship.getYCoord() - 1);
-                    placeShotAutomated(ship.getXCoord(), ship.getYCoord() + ship.getLaenge());
-                    for (int j = 0; j < ship.getLaenge(); j++) {
+                    placeShotAutomated(ship.getXCoord(), ship.getYCoord() + ship.getSize());
+                    for (int j = 0; j < ship.getSize(); j++) {
                         placeShotAutomated(ship.getXCoord() + 1, ship.getYCoord() + j);
                         placeShotAutomated(ship.getXCoord() - 1, ship.getYCoord() + j);
                     }
@@ -404,13 +404,13 @@ public class Field {
 
     boolean placeShotAutomated(int x, int y) {
         if(x >= 0 && x <= width - 1 && y >= 0 && y <= height - 1) {
-            for(int i=0; i < schussCounter; i++) {
-                if(schuesse[i].isAt(x, y)) {
+            for(int i = 0; i < shotCounter; i++) {
+                if(shots[i].isAt(x, y)) {
                     return false;
                 }
             }
-            schuesse[schussCounter] = new Shot(x, y, false);
-            schussCounter++;
+            shots[shotCounter] = new Shot(x, y, false);
+            shotCounter++;
         }
         return false;
     }

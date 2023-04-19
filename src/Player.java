@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 public class Player {
     public boolean switchDraw = true;
     private String name = "";
-    public Field spielfeld = new Field();
+    public Field field = new Field();
 
     Random generator = new Random();
 
@@ -81,8 +81,8 @@ public class Player {
         if(input > 26 || input < 10) {
             throw new IllegalArgumentException();
         } else {
-            this.spielfeld.setHeight(input);
-            this.spielfeld.setWidth(input);
+            this.field.setHeight(input);
+            this.field.setWidth(input);
             enemy.setHeight(input);
             enemy.setWidth(input);
         }
@@ -137,13 +137,13 @@ public class Player {
                 orientation = "V";
             }
 
-            schiffe[9 - spielfeld.addCounter].setShip(x - 1, y, orientation.toUpperCase());
+            schiffe[9 - field.addCounter].setShip(x - 1, y, orientation.toUpperCase());
 
-            if (spielfeld.isAllowed(schiffe[9 - spielfeld.addCounter])) {
-                spielfeld.placeShip(x - 1, y, orientation, schiffe[9 - spielfeld.addCounter].getLaenge(), schiffe[9-spielfeld.addCounter].isArmored());
-                spielfeld.addCounter++;
-                if (spielfeld.addCounter == 10) {
-                    spielfeld.draw(true);
+            if (field.isAllowed(schiffe[9 - field.addCounter])) {
+                field.placeShip(x - 1, y, orientation, schiffe[9 - field.addCounter].getSize(), schiffe[9- field.addCounter].isArmored());
+                field.addCounter++;
+                if (field.addCounter == 10) {
+                    field.draw(true);
                     System.out.print("\033[H\033[2J");
                     System.out.flush();
                     System.out.println("Drücke ENTER um fortzufahren!");
@@ -153,9 +153,9 @@ public class Player {
                         else{Main.status = Main.Status.ATCK;}
                         System.out.print("\033[H\033[2J");
                         System.out.flush();
-                        spielfeld.draw(true);
+                        field.draw(true);
                     } else {
-                        spielfeld.draw(true);
+                        field.draw(true);
                         TimeUnit.MILLISECONDS.sleep(1500);
                         System.out.print("\033[H\033[2J");
                         System.out.flush();
@@ -206,9 +206,9 @@ public class Player {
                 System.arraycopy(schiffeAD, 0, schiffe, 0, schiffeAD.length);
             }
 
-            spielfeld.draw(true);
+            field.draw(true);
 
-            System.out.println("Gib die Spalte und Zeile für den Startpunkt und die Orientierung für dein Schiff mit der Länge " + schiffe[9 - spielfeld.addCounter].getLaenge() + " ein, " + name + ".");
+            System.out.println("Gib die Spalte und Zeile für den Startpunkt und die Orientierung für dein Schiff mit der Länge " + schiffe[9 - field.addCounter].getSize() + " ein, " + name + ".");
 
             int x = scan.nextInt();
             String y = scan.next();
@@ -221,13 +221,13 @@ public class Player {
                 return true;
             }
 
-            schiffe[9 - spielfeld.addCounter].setShip(x - 1, yCoord, orientation.toUpperCase());
+            schiffe[9 - field.addCounter].setShip(x - 1, yCoord, orientation.toUpperCase());
 
-            if(spielfeld.isAllowed(schiffe[9 - spielfeld.addCounter])) {
-                spielfeld.placeShip(x - 1, spielfeld.stringToYCoord(y.toUpperCase()), orientation.toUpperCase(), schiffe[9 - spielfeld.addCounter].getLaenge(), schiffe[9-spielfeld.addCounter].isArmored());
-                spielfeld.addCounter++;
-                if(spielfeld.addCounter == 10) {
-                    spielfeld.draw(true);
+            if(field.isAllowed(schiffe[9 - field.addCounter])) {
+                field.placeShip(x - 1, field.stringToYCoord(y.toUpperCase()), orientation.toUpperCase(), schiffe[9 - field.addCounter].getSize(), schiffe[9- field.addCounter].isArmored());
+                field.addCounter++;
+                if(field.addCounter == 10) {
+                    field.draw(true);
                     System.out.print("\033[H\033[2J");
                     System.out.flush();
                     System.out.println("Drücke ENTER um fortzufahren!");
@@ -237,9 +237,9 @@ public class Player {
                         else{Main.status = Main.Status.ATCK;}
                         System.out.print("\033[H\033[2J");
                         System.out.flush();
-                        spielfeld.draw(true);
+                        field.draw(true);
                         return false;
-                    } else{ spielfeld.draw(true); TimeUnit.MILLISECONDS.sleep(1500); System.out.print("\033[H\033[2J"); System.out.flush(); return false;}
+                    } else{ field.draw(true); TimeUnit.MILLISECONDS.sleep(1500); System.out.print("\033[H\033[2J"); System.out.flush(); return false;}
                 }
                 else{System.out.print("\033[H\033[2J"); System.out.flush(); return true;  }
             } else {
@@ -278,12 +278,12 @@ public class Player {
                 }
 
                 if (x >= 1 && x <= enemy.getWidth() && yCoord >= 0 && yCoord < enemy.getHeight()) { //////////////////Innerhalb des Spielfeldes
-                    if(trySchuss(enemy, x, yCoord)) {
+                    if(tryShot(enemy, x, yCoord)) {
                         System.out.println("Ey... da haste schon hingeschossen!");
                         return true;
                     }
 
-                    if (enemy.schuesse[enemy.schussCounter - 1].checkHit(enemy)) { ///////////////////////Getroffen
+                    if (enemy.shots[enemy.shotCounter - 1].checkHit(enemy)) { ///////////////////////Getroffen
                         do{
                             System.out.print("\033[H\033[2J");
                             System.out.flush();
@@ -339,9 +339,9 @@ public class Player {
         return true;
     }
 
-    public boolean trySchuss(Field enemy, int x, int yCoord) throws InterruptedException {
-        for (int i = 0; i < enemy.schussCounter; i++) {
-            if (enemy.schuesse[i].isAt(x - 1, yCoord)) {
+    public boolean tryShot(Field enemy, int x, int yCoord) throws InterruptedException {
+        for (int i = 0; i < enemy.shotCounter; i++) {
+            if (enemy.shots[i].isAt(x - 1, yCoord)) {
                 do{
                     System.out.print("\033[H\033[2J");
                     System.out.flush();
@@ -356,8 +356,8 @@ public class Player {
         }
         Shot schuss = new Shot(x - 1, yCoord, true);
 
-        enemy.schuesse[enemy.schussCounter] = schuss;
-        enemy.schussCounter++;
+        enemy.shots[enemy.shotCounter] = schuss;
+        enemy.shotCounter++;
         return false;
     }
 
@@ -390,15 +390,15 @@ public class Player {
         if(coord.matches("[A-Za-z]+")){
             for(int i=0; i <= enemy.getWidth(); i++){
                 clear = true;
-                for(int j = 0; j < enemy.schussCounter; j++){
-                    if(enemy.schuesse[j].isAt(i, enemy.stringToYCoord(coord.toUpperCase()))){
+                for(int j = 0; j < enemy.shotCounter; j++){
+                    if(enemy.shots[j].isAt(i, enemy.stringToYCoord(coord.toUpperCase()))){
                         clear = false;
                     }
                 }
                 if(clear) {
                     Shot schuss = new Shot(i, enemy.stringToYCoord(coord.toUpperCase()), true);
-                    enemy.schuesse[enemy.schussCounter] = schuss;
-                    enemy.schussCounter++;
+                    enemy.shots[enemy.shotCounter] = schuss;
+                    enemy.shotCounter++;
                     if(schuss.checkHit(enemy)){
                         do{
                             System.out.print("\033[H\033[2J");
@@ -418,15 +418,15 @@ public class Player {
         else{
             for(int j=0; j < enemy.getHeight(); j++){
                 clear = true;
-                for(int i = 0; i < enemy.schussCounter; i++){
-                    if(enemy.schuesse[i].isAt(Integer.parseInt(coord)-1, j)){
+                for(int i = 0; i < enemy.shotCounter; i++){
+                    if(enemy.shots[i].isAt(Integer.parseInt(coord)-1, j)){
                         clear = false;
                     }
                 }
                 if(clear) {
                     Shot schuss = new Shot(Integer.parseInt(coord) - 1, j, true);
-                    enemy.schuesse[enemy.schussCounter] = schuss;
-                    enemy.schussCounter++;
+                    enemy.shots[enemy.shotCounter] = schuss;
+                    enemy.shotCounter++;
                     if (schuss.checkHit(enemy)) {
                         do {
                             System.out.print("\033[H\033[2J");
@@ -452,15 +452,15 @@ public class Player {
             for(int i = x-1; i <= x+1; i++){
                 clear = true;
                 if(i > 0 && i <= enemy.getWidth() && j >= 0 && j < enemy.getHeight()) {
-                    for (int u = 0; u < enemy.schussCounter; u++) {
-                        if (enemy.schuesse[u].isAt(i - 1, j)) {
+                    for (int u = 0; u < enemy.shotCounter; u++) {
+                        if (enemy.shots[u].isAt(i - 1, j)) {
                             clear = false;
                         }
                     }
                     if (clear) {
                         Shot schuss = new Shot(i - 1, j, true);
-                        enemy.schuesse[enemy.schussCounter] = schuss;
-                        enemy.schussCounter++;
+                        enemy.shots[enemy.shotCounter] = schuss;
+                        enemy.shotCounter++;
 
                         if (schuss.checkHit(enemy)) {
                             do {

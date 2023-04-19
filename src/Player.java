@@ -118,7 +118,7 @@ public class Player {
 
 //    TODO: Geht diese Methode schöner?
     public boolean randomPlaceShip(Field enemy) throws InterruptedException {
-        int yCoord;
+//        int yCoord;
         if (Main.status == Main.Status.PICKPHASEAD) {
             System.arraycopy(schiffeAD, 0, schiffe, 0, schiffeAD.length);
         }
@@ -385,7 +385,7 @@ public class Player {
 
     //TODO: Geht diese Methode schöner?
     void placeLineShot(String coord, Field enemy) throws InterruptedException {
-        boolean clear = false;
+        boolean clear;
 
         if(coord.matches("[A-Za-z]+")){
             for(int i=0; i <= enemy.getWidth(); i++){
@@ -447,7 +447,7 @@ public class Player {
 
     //TODO: Geht diese Methode schöner?
     void placeBigShot(int x, String y, Field enemy) throws InterruptedException {
-        boolean clear = false;
+        boolean clear;
         for(int j = enemy.stringToYCoord(y.toUpperCase()) - 1; j <= enemy.stringToYCoord(y.toUpperCase()) + 1; j++){
             for(int i = x-1; i <= x+1; i++){
                 clear = true;

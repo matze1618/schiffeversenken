@@ -3,7 +3,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Bot extends Player{
     private final String name;
-    private final Shot[] botSchuesse = new Shot[700]; //was initially not final
+//    private final Shot[] botSchuesse = new Shot[700]; //was initially not final //TODO: still needed?
 
     //Bot(){};
 
@@ -69,7 +69,7 @@ public class Bot extends Player{
 
     @Override
     public boolean randomPlaceShip(Field enemy) throws InterruptedException {
-        int yCoord; //TODO: still needed?
+//        int yCoord; //TODO: still needed?
         if (Main.status == Main.Status.PICKPHASEAD) {
             System.arraycopy(schiffeAD, 0, schiffe, 0, schiffeAD.length);
         }

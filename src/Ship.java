@@ -101,7 +101,7 @@ public class Ship {
         return isAt(x, y) <= 6 && isAt(x, y) >= 1;
     }
 
-    public void getHit(Field spielfeld) throws InterruptedException {
+    public void getHit(Field spielfeld){ // throws InterruptedException { //TODO siehe nächstes TODO
         leben--;
         if(zerstoert()){
             System.out.println("Du hast ein Schiff mit der Länge " + getLaenge() + " zerstört!");
@@ -121,7 +121,7 @@ public class Ship {
     }
 
     public void createAnimation(Field spielfeld){
-        Animation animation = new Animation(this, spielfeld);
+        Animation animation = new Animation(this); //, spielfeld);
         spielfeld.animations[spielfeld.aniCounter] = animation;
         spielfeld.aniCounter++;
     }

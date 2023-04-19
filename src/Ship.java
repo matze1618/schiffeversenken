@@ -5,14 +5,14 @@ public class Ship {
     private final int laenge;
     private String orientation;
     public int aniBlocks=0;
+    private int leben;
 
     public int getLeben() {
         return leben;
     }
 
-    private int leben;
     private final boolean armored;
-    //
+
     Ship(int xCoord, int yCoord, int laenge, String orientation, boolean armored){
         this.xCoord = xCoord;
         this.yCoord = yCoord;
@@ -55,6 +55,8 @@ public class Ship {
 
 
     //TODO Wird hier else{return 0;} erreicht?
+    //TODO: Warum hat jeder Fall return 0?
+    //TODO: Modellierung über Klasse oder Enum, statt Informationen durch Pseudo-Zahlen abzubilden?
     public int isAt(int x, int y) {
         if ("H".equalsIgnoreCase(orientation) && x >= xCoord && x <= xCoord + laenge-1 && y == yCoord) {
 
@@ -72,8 +74,6 @@ public class Ship {
         }
         return 0;
     }
-
-
 
     public boolean isBlocked(Ship schiff) {
         if ("H".equalsIgnoreCase(schiff.orientation)) {
@@ -95,17 +95,17 @@ public class Ship {
     }
 
 
-//
+    //TODO: Hat diese Lücke eine Bedeutung?
 
     public boolean isAtToBool(int x, int y){
         return isAt(x, y) <= 6 && isAt(x, y) >= 1;
     }
 
-
     public void getHit(Field spielfeld) throws InterruptedException {
         leben--;
         if(zerstoert()){
             System.out.println("Du hast ein Schiff mit der Länge " + getLaenge() + " zerstört!");
+            //TODO: Kann das permanent weg?
             //TimeUnit.MILLISECONDS.sleep(1000);
             spielfeld.shotsInBarrier();
             createAnimation(spielfeld);
@@ -115,7 +115,6 @@ public class Ship {
     public boolean zerstoert(){
         return leben <= 0;
     }
-
 
     public boolean isArmored(){
         return armored;
@@ -128,4 +127,3 @@ public class Ship {
     }
 }
 // gibt es merch für merge?
-

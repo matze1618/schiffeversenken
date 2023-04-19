@@ -1,20 +1,14 @@
-
 //import java.awt.*;
-
 import java.util.concurrent.TimeUnit;
 
 public class Field {
     private int width = 10;
     private int height = 10;
-
     boolean showAnimation = false;
-
     Ship[] schiffe;
     int addCounter = 0;
-
     Shot[] schuesse;
     int schussCounter = 0;
-
     Animation[] animations;
     int aniCounter = 0;
 
@@ -27,14 +21,12 @@ public class Field {
     public void setWidth(int width) {
         this.width = width;
     }
-
     public void setHeight(int height) {
         this.height = height;
     }
 
-
+//TODO: Muss diese Mehthode >200 Zeilen lang sein?
     void draw(boolean showShips) throws InterruptedException {
-
         char buchstabe = 'A';
 
         System.out.print("   | 1 ");
@@ -263,7 +255,7 @@ public class Field {
         }
     }
 
-
+// TODO: Hat diese Lücke eine Bedeutung?
 
 
 
@@ -293,6 +285,7 @@ public class Field {
         return true;
     }
 
+    //TODO: Durch  HashMap verschönern?
     public int stringToYCoord(String character){
         switch (character) {
             case ("A"):
@@ -361,7 +354,6 @@ public class Field {
         }
     }
 
-
     public void checkGameOver(String winnerName) {
         if (!Main.gameOver) {
             Main.gameOver = true;
@@ -376,7 +368,6 @@ public class Field {
             }
         }
     }
-
 
     int shipsAliveByLength(int laenge){
         int counter = 0;
@@ -424,4 +415,5 @@ public class Field {
         return false;
     }
 }
+//TODO: Was hat es mit diesem Kommentar auf sich?
 //new Schuss(x, y, false);

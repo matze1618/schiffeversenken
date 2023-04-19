@@ -2,8 +2,6 @@
 import java.util.InputMismatchException;
 
 public class Main {
-
-
     public static final String ANSI_RESET = "\u001B[0m";
     //public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -15,15 +13,11 @@ public class Main {
     //public static final String ANSI_WHITE = "\u001B[37m";
     public static final String ANSI_BG_WHITE = "\u001b[47m";
 
-
     enum Status {PICKPHASE, PICKPHASEAD, ATCK, ATCKAD}
-
     static Status status = Status.PICKPHASE;
-
     public static boolean gameOver = false;
 
     public static void main(String[] args) throws InterruptedException {
-
         Player player1 = new Player(ANSI_GREEN + "Frederik" + ANSI_RESET);
         //Player player2;
 
@@ -39,7 +33,6 @@ public class Main {
         }
 
 
-
         player1.setGameMode();
 
         if(status == Status.PICKPHASEAD) {
@@ -51,7 +44,7 @@ public class Main {
         }
 
 
-
+        //TODO: Testing verbessern!!!
         //test(player1, player2);
 
         while (!gameOver) {
@@ -115,4 +108,3 @@ public class Main {
         status = Status.ATCK;
     }
 }
-//

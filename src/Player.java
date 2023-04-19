@@ -3,8 +3,6 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-
-//
 public class Player {
     public boolean switchDraw = true;
     private String name = "";
@@ -21,7 +19,6 @@ public class Player {
 
     public Ship[] schiffe = {new Ship(1), new Ship(2), new Ship(2), new Ship(2), new Ship(3), new Ship(3), new Ship(3), new Ship(4), new Ship(4), new Ship(5)};
     public Ship[] schiffeAD = {new Ship(2), new Ship(2), new Ship(3), new Ship(3), new Ship(3, true), new Ship(4), new Ship(4, true), new Ship(5), new Ship(5), new Ship(6)};
-
 
     //public int[] schiffe = {1, 2, 2, 2, 3, 3, 3, 4, 4, 5};
 
@@ -48,7 +45,6 @@ public class Player {
         }
     }
 
-
     public void setGameMode() {
         System.out.println("Wollt ihr den Normalen oder Advanced Modus spielen? N/A");
         String input = scan.next();
@@ -62,6 +58,7 @@ public class Player {
         }
     }
 
+    //TODO: Hat diese Lücke eine Bedeutung?
 
 
 
@@ -75,7 +72,7 @@ public class Player {
         }
     }
 
-
+    //TODO: Hat diese Lücke eine Bedeutung?
 
 
     public void setSpielfeldSize(Field enemy) throws IllegalArgumentException{
@@ -91,7 +88,7 @@ public class Player {
         }
     }
 
-
+    //TODO: Hat diese Lücke eine Bedeutung?
 
 
     public void setNameInput(int spielerNummer) {
@@ -117,9 +114,9 @@ public class Player {
         this.name = colour + name + Main.ANSI_RESET;
     }
 
+    //TODO: Hat diese Lücke eine Bedeutung?
 
-
-
+//    TODO: Geht diese Methode schöner?
     public boolean randomPlaceShip(Field enemy) throws InterruptedException {
         int yCoord;
         if (Main.status == Main.Status.PICKPHASEAD) {
@@ -139,7 +136,6 @@ public class Player {
             } else {
                 orientation = "V";
             }
-
 
             schiffe[9 - spielfeld.addCounter].setShip(x - 1, y, orientation.toUpperCase());
 
@@ -171,10 +167,9 @@ public class Player {
                 }
             }
         }
-
     }
 
-
+    //TODO: Hat diese Lücke eine Bedeutung?
 
 
 
@@ -189,7 +184,7 @@ public class Player {
         }
     }
 
-
+    //TODO: Hat diese Lücke eine Bedeutung?
 
 
     public boolean input(Field enemy) throws InterruptedException, IllegalArgumentException {
@@ -207,7 +202,6 @@ public class Player {
 
         int yCoord;
         if (Main.status == Main.Status.PICKPHASE || Main.status == Main.Status.PICKPHASEAD) {
-
             if(Main.status == Main.Status.PICKPHASEAD){
                 System.arraycopy(schiffeAD, 0, schiffe, 0, schiffeAD.length);
             }
@@ -228,7 +222,6 @@ public class Player {
             }
 
             schiffe[9 - spielfeld.addCounter].setShip(x - 1, yCoord, orientation.toUpperCase());
-
 
             if(spielfeld.isAllowed(schiffe[9 - spielfeld.addCounter])) {
                 spielfeld.placeShip(x - 1, spielfeld.stringToYCoord(y.toUpperCase()), orientation.toUpperCase(), schiffe[9 - spielfeld.addCounter].getLaenge(), schiffe[9-spielfeld.addCounter].isArmored());
@@ -258,8 +251,9 @@ public class Player {
             }
         }
 
+        //TODO: Hat diese Lücke eine Bedeutung?
 
-
+        //TODO: Geht diese Methode schöner?
         else if (Main.status == Main.Status.ATCK || Main.status == Main.Status.ATCKAD) {
             if(switchDraw){
                 System.out.print("\033[H\033[2J");
@@ -283,13 +277,11 @@ public class Player {
                     return true;
                 }
 
-
                 if (x >= 1 && x <= enemy.getWidth() && yCoord >= 0 && yCoord < enemy.getHeight()) { //////////////////Innerhalb des Spielfeldes
                     if(trySchuss(enemy, x, yCoord)) {
                         System.out.println("Ey... da haste schon hingeschossen!");
                         return true;
                     }
-
 
                     if (enemy.schuesse[enemy.schussCounter - 1].checkHit(enemy)) { ///////////////////////Getroffen
                         do{
@@ -347,7 +339,6 @@ public class Player {
         return true;
     }
 
-
     public boolean trySchuss(Field enemy, int x, int yCoord) throws InterruptedException {
         for (int i = 0; i < enemy.schussCounter; i++) {
             if (enemy.schuesse[i].isAt(x - 1, yCoord)) {
@@ -385,14 +376,14 @@ public class Player {
         }
         System.out.println("Ins Wasser geschossen!");
         switch (powerup) {
+            //TODO: HashMap?
             case 1 -> System.out.println("Du hast einen Big Shot als nächsten Schuss!");
             case 2 -> System.out.println("Du hast einen Line Shot als nächsten Schuss!");
             case 3 -> System.out.println("Du hast ein Radar bekommen!");
         }
     }
 
-
-
+    //TODO: Geht diese Methode schöner?
     void placeLineShot(String coord, Field enemy) throws InterruptedException {
         boolean clear = false;
 
@@ -454,7 +445,7 @@ public class Player {
         }
     }
 
-
+    //TODO: Geht diese Methode schöner?
     void placeBigShot(int x, String y, Field enemy) throws InterruptedException {
         boolean clear = false;
         for(int j = enemy.stringToYCoord(y.toUpperCase()) - 1; j <= enemy.stringToYCoord(y.toUpperCase()) + 1; j++){
@@ -489,6 +480,4 @@ public class Player {
         powerup = 0;
         TimeUnit.MILLISECONDS.sleep(1500);
     }
-
-
 }

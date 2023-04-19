@@ -1,16 +1,12 @@
 import java.util.Objects;
 
 public class Animation {
-
     public int frame = 0;
     public boolean active;
     private boolean lastFrame = false;
-
     AnimationBlock[] animationBlocks = new AnimationBlock[30];
     int aniCounter=0;
-
-
-
+    
     Animation(Ship schiff, Field spielfeld){
         this.active = true;
 
@@ -27,10 +23,8 @@ public class Animation {
                 animationBlock = new AnimationBlock(schiff.getXCoord()+i-1, schiff.getYCoord() + 1);
                 animationBlocks[aniCounter] = animationBlock;
                 aniCounter++;
-
             }
-        }
-        else if(Objects.equals(schiff.getOrientation(), "V")) {
+        } else if(Objects.equals(schiff.getOrientation(), "V")) {
             for (int i = 0; i < schiff.getLaenge() + 2; i++) {
                 AnimationBlock animationBlock = new AnimationBlock(schiff.getXCoord() - 1, schiff.getYCoord() + i - 1);
                 animationBlocks[aniCounter] = animationBlock;
@@ -44,8 +38,7 @@ public class Animation {
                 animationBlocks[aniCounter] = animationBlock;
                 aniCounter++;
             }
-        }
-        else {
+        } else {
             System.out.println("Fehler h oder v!");
         }
     }
@@ -72,7 +65,6 @@ public class Animation {
         if(lastFrame){active = false;}
         return isRendered;
     }
-
     public boolean isActive() {
         return active;
     }

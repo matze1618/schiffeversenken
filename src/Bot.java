@@ -1,4 +1,3 @@
-
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -55,6 +54,7 @@ public class Bot extends Player{
     }
 
     public boolean smartSchuss(Field enemy, int x, int y) throws InterruptedException {
+        //TODO: Das geht schöner!
         if(!trySchuss(enemy, x - 1, y)) {
             return false;
         }
@@ -88,9 +88,8 @@ public class Bot extends Player{
                 orientation = "V";
             }
 
-
             schiffe[9 - spielfeld.addCounter].setShip(x - 1, y, orientation.toUpperCase());
-
+            //TODO: Geht das schöner?
             if (spielfeld.isAllowed(schiffe[9 - spielfeld.addCounter])) {
                 spielfeld.placeShip(x - 1, y, orientation, schiffe[9 - spielfeld.addCounter].getLaenge(), schiffe[9-spielfeld.addCounter].isArmored());
                 spielfeld.addCounter++;
@@ -119,7 +118,6 @@ public class Bot extends Player{
                 }
             }
         }
-
     }
 
     public int getLastHit(Field enemy, int shipToSink) throws BotFailureException{

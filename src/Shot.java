@@ -9,7 +9,6 @@ public class Shot {
         this.placedManually = placedManually;
     }
 
-
     public int getxCoord() {
         return xCoord;
     }
@@ -17,8 +16,6 @@ public class Shot {
     public int getyCoord() {
         return yCoord;
     }
-
-
 
     public boolean getPlacedManually() {
         return placedManually;
@@ -33,7 +30,6 @@ public class Shot {
         }
         return false;
     }
-
 
     public boolean isAt(int x, int y){
         return x == xCoord && y == yCoord;

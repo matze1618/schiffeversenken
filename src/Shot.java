@@ -19,7 +19,7 @@ public class Shot {
         return placedManually;
     }
 
-    public boolean checkHit(Field spielfeld) throws InterruptedException {
+    public boolean checkHit(Field spielfeld){
         for(int i = 0; i < spielfeld.addCounter; i++){
             if(spielfeld.ships[i].isAtToBool(position.getX(), position.getY())){
                 spielfeld.ships[i].getHit(spielfeld);

@@ -6,7 +6,8 @@ public class Ship {
     private final HashSet<Coordinate> allPositions = new HashSet<>();
     private final HashSet<Coordinate> periphery = new HashSet<>();
     private final int size;
-    private String orientation;
+//    private String orientation;
+    private boolean horizontal;
     public int aniBlocks = 0;
     private int lives;
 
@@ -20,7 +21,8 @@ public class Ship {
         this.basePosition = new Coordinate(x, y);
         this.size = size;
         this.lives = size;
-        this.orientation = orientation.toUpperCase();
+//        this.orientation = orientation.toUpperCase();
+        this.horizontal = (Objects.equals(orientation.toUpperCase(), "H"));
         this.armored = armored;
 
         setAllPositions();
@@ -28,7 +30,7 @@ public class Ship {
     }
 
     private void setAllPositions(){
-        if (Objects.equals(orientation, "H")){
+        if (horizontal){
             for(int i = 0; i < size; i++){
                 allPositions.add(new Coordinate(basePosition.getX() + i, basePosition.getY()));
             }
@@ -40,7 +42,7 @@ public class Ship {
     }
 
     private void setPeriphery(){
-        if (Objects.equals(this.orientation, "H")) {
+        if (horizontal) {
             if (!(basePosition.getX() == 0)) {
                 periphery.add(new Coordinate(basePosition.getX() - 1, basePosition.getY()));
             }
@@ -95,7 +97,8 @@ public class Ship {
     }
 
     public void setShip(int xCoord, int yCoord, String orientation) {
-        this.orientation = orientation;
+//        this.orientation = orientation;
+        this.horizontal = (Objects.equals(orientation.toUpperCase(), "H"));
         this.basePosition = new Coordinate(xCoord, yCoord);
 
         setAllPositions();
@@ -114,16 +117,20 @@ public class Ship {
         return size;
     }
 
-    public String getOrientation() {
-        return orientation;
+    public boolean isHorizontal() {
+        return horizontal;
     }
+
+    //    public String getOrientation() {
+//        return orientation;
+//    }
 
 
     //TODO Wird hier else{return 0;} erreicht?
     //TODO: Warum hat jeder Fall return 0?
     //TODO: Modellierung über Klasse oder Enum, statt Informationen durch Pseudo-Zahlen abzubilden?
     public int isAt(int x, int y) {
-        if ("H".equalsIgnoreCase(orientation) && x >= basePosition.getX() && x <= basePosition.getX() + size -1 && y == basePosition.getY()) {
+        if (horizontal && x >= basePosition.getX() && x <= basePosition.getX() + size -1 && y == basePosition.getY()) {
 
             if(x == basePosition.getX()) return 4;
             else if(x == basePosition.getX() + size -1) return 6;
@@ -131,7 +138,7 @@ public class Ship {
             else{return 0;}
 
 
-        } else if ("V".equalsIgnoreCase(orientation) && y >= basePosition.getY() && y <= basePosition.getY() + size -1 && x == basePosition.getX()) {
+        } else if (!horizontal && y >= basePosition.getY() && y <= basePosition.getY() + size -1 && x == basePosition.getX()) {
             if(y == basePosition.getY()) return 1;
             else if(y == basePosition.getY() + size -1) return 3;
             else if(y < basePosition.getY() + size -1) return 2;
@@ -141,7 +148,7 @@ public class Ship {
     }
 
     public boolean isBlocked(Ship ship) {
-        if ("H".equalsIgnoreCase(ship.orientation)) {
+        if (horizontal) {
             for (int i = 0; i < ship.getSize(); i++) {
                 if (isAtToBool(ship.getXCoord() + i, ship.getYCoord()) || isAtToBool(ship.getXCoord() - 1 + i, ship.getYCoord()) || isAtToBool(ship.getXCoord() + 1 + i, ship.getYCoord()) || isAtToBool(ship.getXCoord() + i, ship.getYCoord() - 1) || isAtToBool(ship.getXCoord() + i, ship.getYCoord() + 1)) {
                     return true;
@@ -187,6 +194,15 @@ public class Ship {
         Animation animation = new Animation(this); //, field);
         field.animations[field.aniCounter] = animation;
         field.aniCounter++;
+    }
+
+    public boolean isAllowed(int size){
+        for (Coordinate coordinate : allPositions){
+            if (!coordinate.isValid(size)){
+                return false;
+            }
+        }
+        return true;
     }
 }
 // gibt es merch für merge?

@@ -1,5 +1,3 @@
-import java.util.Objects;
-
 public class Animation {
     public boolean active;
     private boolean lastFrame = false;
@@ -10,7 +8,7 @@ public class Animation {
     Animation(Ship ship){ //, Field field){
         this.active = true;
 
-        if(Objects.equals(ship.getOrientation(), "H")) {
+        if(ship.isHorizontal()) {
             for (int i = 0; i < ship.getSize() + 2; i++) {
                 AnimationBlock animationBlock = new AnimationBlock(ship.getXCoord()+i-1, ship.getYCoord() - 1);
                 animationBlocks[animationCounter] = animationBlock;
@@ -24,7 +22,7 @@ public class Animation {
                 animationBlocks[animationCounter] = animationBlock;
                 animationCounter++;
             }
-        } else if(Objects.equals(ship.getOrientation(), "V")) {
+        } else {
             for (int i = 0; i < ship.getSize() + 2; i++) {
                 AnimationBlock animationBlock = new AnimationBlock(ship.getXCoord() - 1, ship.getYCoord() + i - 1);
                 animationBlocks[animationCounter] = animationBlock;
@@ -38,20 +36,17 @@ public class Animation {
                 animationBlocks[animationCounter] = animationBlock;
                 animationCounter++;
             }
-        } else {
-            //TODO: genauere/sprechendere Fehlermeldung!
-            System.out.println("Fehler h oder v!");
         }
     }
 
-    public boolean drawIfOn(int x, int y){
+    public boolean drawIfOn(Coordinate coordinate){
         boolean isRendered = false;
         if(!lastFrame) {
             for (int i = 0; i < animationCounter; i++) {
                 active = false;
                 if (animationBlocks[i].frame < 9) {
                     active = true;
-                    if (animationBlocks[i].isAt(x, y) && animationBlocks[i].isActive()) {
+                    if (animationBlocks[i].isAt(coordinate) && animationBlocks[i].isActive()) {
                         animationBlocks[i].draw();
                         animationBlocks[i].draw();
                         animationBlocks[i].draw();

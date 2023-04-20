@@ -2,8 +2,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class AnimationBlock {
-    private int posX;
-    private int posY;
+    private final Coordinate position;
     private boolean active;
     int frame;
     Random generator;
@@ -11,8 +10,7 @@ public class AnimationBlock {
     AnimationBlock(int x, int y){
         this.frame = 0;
         this.active = true;
-        this.posX = x;
-        this.posY = y;
+        this.position = new Coordinate(x, y);
 
         generator = new Random();
     }
@@ -55,8 +53,8 @@ public class AnimationBlock {
         }
     }
 
-    public boolean isAt(int x, int y){
-        return (x == posX && y == posY);
+    public boolean isAt(Coordinate coordinate){
+        return position.equalTo(coordinate);
     }
 
     public boolean isActive(){

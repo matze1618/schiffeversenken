@@ -2,7 +2,6 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Bot extends Player{
-    private final String name;
 //    private final Shot[] botSchuesse = new Shot[700]; //was initially not final //TODO: still needed?
 
     //Bot(){};
@@ -10,7 +9,6 @@ public class Bot extends Player{
     Bot(String name) {
         this.name = Main.ANSI_RED + name + Main.ANSI_RESET;
     }
-
 
     @Override
     public boolean inputTryExceptions (Field enemy) {
@@ -36,7 +34,7 @@ public class Bot extends Player{
         int shipToSink = shipToSinkIndex(enemy);
         if(shipToSink == enemy.ships.length) {
             Random random = new Random();
-            return tryShot(enemy, random.nextInt(enemy.getWidth()), random.nextInt(enemy.getHeight()));
+            return tryShot(enemy, random.nextInt(enemy.getSize()), random.nextInt(enemy.getSize()));
         } else {
             int lastHit = getLastHit(enemy, shipToSink);
             return smartShot(enemy, enemy.shots[lastHit].getxCoord(), enemy.shots[lastHit].getyCoord());
@@ -80,8 +78,8 @@ public class Bot extends Player{
 
         while(true) {
             Random random = new Random();
-            x = random.nextInt(enemy.getWidth());
-            y = random.nextInt(enemy.getHeight());
+            x = random.nextInt(enemy.getSize());
+            y = random.nextInt(enemy.getSize());
             if(random.nextBoolean()){
                 orientation = "H";
             } else {
@@ -90,7 +88,7 @@ public class Bot extends Player{
 
             schiffe[9 - field.addCounter].setShip(x - 1, y, orientation.toUpperCase());
             //TODO: Geht das schöner?
-            if (field.isAllowed(schiffe[9 - field.addCounter])) {
+            if (schiffe[9 - field.addCounter].isAllowed(field.getSize())) {
                 field.placeShip(x - 1, y, orientation, schiffe[9 - field.addCounter].getSize(), schiffe[9- field.addCounter].isArmored());
                 field.addCounter++;
                 if (field.addCounter == 10) {
@@ -131,7 +129,7 @@ public class Bot extends Player{
 
     @Override
     public boolean tryShot(Field enemy, int x, int yCoord) throws InterruptedException {
-        if(x < 0 || x >= enemy.getWidth() || yCoord < 0 || yCoord >= enemy.getHeight()) {
+        if(x < 0 || x >= enemy.getSize() || yCoord < 0 || yCoord >= enemy.getSize()) {
             return true;
         }
         for (int i = 0; i < enemy.shotCounter; i++) {

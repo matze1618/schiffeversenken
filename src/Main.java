@@ -1,11 +1,10 @@
 public class Main {
     public static final String ANSI_RESET = "\u001B[0m";
-    //public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_BLUE = "\u001B[34m";
-    //public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_PURPLE = "\u001B[35m"; //TODO: War auskommentiert => Wieso?
     public static final String ANSI_CYAN = "\u001B[36m";
     //public static final String ANSI_WHITE = "\u001B[37m";
     public static final String ANSI_BG_WHITE = "\u001b[47m";
@@ -16,27 +15,20 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         Player player1 = new Player(ANSI_GREEN + "Frederik" + ANSI_RESET);
-        //Player player2;
-
-        //player1.setNameInput(1);
-        //player2.setNameInput(2);
-
         Player player2;
 
         if(player1.opponentIsBotTry()) {
             player2 = new Bot("Robby");
         } else {
-            player2 = new Player(ANSI_RED + "Mattis" + ANSI_RESET);
+            player2 = new Player();
+            player2.setNameInput(2);
         }
 
-
-        player1.setGameMode();
+        player1.setGameMode(); //TODO: Nicht in Player definieren?
 
         if(status == Status.PICKPHASEAD) {
-            player1.field.setHeight(0);
-            player1.field.setWidth(0);
-            player2.field.setHeight(0);
-            player2.field.setWidth(0);
+            player1.field.setSize(0);
+            player2.field.setSize(0);
             player1.setSpielfeldSizeCatch(player2.field);
         }
 

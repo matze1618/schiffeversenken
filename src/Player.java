@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Player {
     public boolean switchDraw = true;
-    private String name = "";
+    protected String name = "";
     public Field field = new Field();
 
     Random generator = new Random();
@@ -81,10 +81,8 @@ public class Player {
         if(input > 26 || input < 10) {
             throw new IllegalArgumentException();
         } else {
-            this.field.setHeight(input);
-            this.field.setWidth(input);
-            enemy.setHeight(input);
-            enemy.setWidth(input);
+            this.field.setSize(input);
+            enemy.setSize(input);
         }
     }
 
@@ -99,12 +97,12 @@ public class Player {
         String colour = scan.next().toLowerCase();
         colour = switch (colour) {
             case "rot" -> Main.ANSI_RED;
-            case "grün" -> Main.ANSI_RED;
-            case "gelb" -> Main.ANSI_RED;
-            case "blau" -> Main.ANSI_RED;
-            case "lila" -> Main.ANSI_RED;
-            case "cyan" -> Main.ANSI_RED;
-            case "weiß" -> Main.ANSI_RED;
+            case "grün" -> Main.ANSI_GREEN;
+            case "gelb" -> Main.ANSI_YELLOW;
+            case "blau" -> Main.ANSI_BLUE;
+            case "lila" -> Main.ANSI_PURPLE;
+            case "cyan" -> Main.ANSI_CYAN;
+            case "weiß" -> Main.ANSI_BG_WHITE;
             default -> scan.next().toLowerCase();
         };
         setName(name, colour);
@@ -117,7 +115,7 @@ public class Player {
     //TODO: Hat diese Lücke eine Bedeutung?
 
 //    TODO: Geht diese Methode schöner?
-    public boolean randomPlaceShip(Field enemy) throws InterruptedException {
+    public boolean randomPlaceShip(Field enemy) throws InterruptedException { //TODO: hier scheint ein Fehler zu sein. Ein Schiffe hat anscheinend die Coordinaten von zwei Schiffen bekommen.
 //        int yCoord;
         if (Main.status == Main.Status.PICKPHASEAD) {
             System.arraycopy(schiffeAD, 0, schiffe, 0, schiffeAD.length);
@@ -129,8 +127,8 @@ public class Player {
 
         while(true) {
             Random random = new Random();
-            x = random.nextInt(enemy.getWidth());
-            y = random.nextInt(enemy.getHeight());
+            x = random.nextInt(enemy.getSize());
+            y = random.nextInt(enemy.getSize());
             if(random.nextBoolean()){
                 orientation = "H";
             } else {
@@ -139,7 +137,7 @@ public class Player {
 
             schiffe[9 - field.addCounter].setShip(x - 1, y, orientation.toUpperCase());
 
-            if (field.isAllowed(schiffe[9 - field.addCounter])) {
+            if (schiffe[9 - field.addCounter].isAllowed(field.getSize())) {
                 field.placeShip(x - 1, y, orientation, schiffe[9 - field.addCounter].getSize(), schiffe[9- field.addCounter].isArmored());
                 field.addCounter++;
                 if (field.addCounter == 10) {
@@ -223,7 +221,7 @@ public class Player {
 
             schiffe[9 - field.addCounter].setShip(x - 1, yCoord, orientation.toUpperCase());
 
-            if(field.isAllowed(schiffe[9 - field.addCounter])) {
+            if(schiffe[9 - field.addCounter].isAllowed(field.getSize())) {
                 field.placeShip(x - 1, field.stringToYCoord(y.toUpperCase()), orientation.toUpperCase(), schiffe[9 - field.addCounter].getSize(), schiffe[9- field.addCounter].isArmored());
                 field.addCounter++;
                 if(field.addCounter == 10) {
@@ -277,7 +275,7 @@ public class Player {
                     return true;
                 }
 
-                if (x >= 1 && x <= enemy.getWidth() && yCoord >= 0 && yCoord < enemy.getHeight()) { //////////////////Innerhalb des Spielfeldes
+                if (x >= 1 && x <= enemy.getSize() && yCoord >= 0 && yCoord < enemy.getSize()) { //////////////////Innerhalb des Spielfeldes
                     if(tryShot(enemy, x, yCoord)) {
                         System.out.println("Ey... da haste schon hingeschossen!");
                         return true;
@@ -388,7 +386,7 @@ public class Player {
         boolean clear;
 
         if(coord.matches("[A-Za-z]+")){
-            for(int i=0; i <= enemy.getWidth(); i++){
+            for(int i=0; i <= enemy.getSize(); i++){
                 clear = true;
                 for(int j = 0; j < enemy.shotCounter; j++){
                     if(enemy.shots[j].isAt(i, enemy.stringToYCoord(coord.toUpperCase()))){
@@ -416,7 +414,7 @@ public class Player {
             TimeUnit.MILLISECONDS.sleep(1500);
         }
         else{
-            for(int j=0; j < enemy.getHeight(); j++){
+            for(int j=0; j < enemy.getSize(); j++){
                 clear = true;
                 for(int i = 0; i < enemy.shotCounter; i++){
                     if(enemy.shots[i].isAt(Integer.parseInt(coord)-1, j)){
@@ -451,7 +449,7 @@ public class Player {
         for(int j = enemy.stringToYCoord(y.toUpperCase()) - 1; j <= enemy.stringToYCoord(y.toUpperCase()) + 1; j++){
             for(int i = x-1; i <= x+1; i++){
                 clear = true;
-                if(i > 0 && i <= enemy.getWidth() && j >= 0 && j < enemy.getHeight()) {
+                if(i > 0 && i <= enemy.getSize() && j >= 0 && j < enemy.getSize()) {
                     for (int u = 0; u < enemy.shotCounter; u++) {
                         if (enemy.shots[u].isAt(i - 1, j)) {
                             clear = false;

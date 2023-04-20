@@ -2,8 +2,7 @@
 import java.util.concurrent.TimeUnit;
 
 public class Field {
-    private int width = 10;
-    private int height = 10;
+    private int size = 10;
     boolean showAnimation = false;
     Ship[] ships;
     int addCounter = 0;
@@ -18,43 +17,44 @@ public class Field {
         animations = new Animation[60];
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-    public void setHeight(int height) {
-        this.height = height;
+    public int getSize() {
+        return size;
     }
 
-//TODO: Muss diese Mehthode >200 Zeilen lang sein?
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    //TODO: Muss diese Mehthode >200 Zeilen lang sein?
     void draw(boolean showShips) throws InterruptedException {
         char buchstabe = 'A';
 
         System.out.print("   | 1 ");
-        for (int i = 2; i <= width - 1; i++) {
+        for (int i = 2; i <= size - 1; i++) {
             if (i < 10) {
                 System.out.print(" " + i + " ");
             } else {
                 System.out.print(" " + i);
             }
         }
-        if (width >= 10) {
-            System.out.println(" " + width + "|");
+        if (size >= 10) {
+            System.out.println(" " + size + "|");
         } else {
-            System.out.println(" " + width + " |");
+            System.out.println(" " + size + " |");
         }
 
 
         System.out.print("―――+");
-        for (int i = 1; i <= width; i++) {
+        for (int i = 1; i <= size; i++) {
             System.out.print("―――");
         }
         System.out.println("|");
 
 
-        for (int j = 0; j < height; j++) {
+        for (int j = 0; j < size; j++) {
             System.out.print(" " + buchstabe + " \u007C");
             buchstabe++;
-            for (int i = 0; i < width; i++) {
+            for (int i = 0; i < size; i++) {
                 boolean isRendered = false;
 
 
@@ -64,7 +64,7 @@ public class Field {
                 for(int a = 0; a < aniCounter; a++){
                     if(!isRendered){
                         if(animations[a].isActive()){showAnimation = true;}
-                        isRendered = animations[a].drawIfOn(i, j);
+                        isRendered = animations[a].drawIfOn(new Coordinate(i, j));
                     }
                 }
 
@@ -246,7 +246,7 @@ public class Field {
             System.out.println();
         }
         System.out.print("―――+");
-        for (int i = 1; i <= width; i++) {
+        for (int i = 1; i <= size; i++) {
             System.out.print("―――");
         }
         System.out.println("|");
@@ -266,14 +266,6 @@ public class Field {
 
     void placeShip(int x, int y, String orientation, int length, boolean armored) {
         ships[addCounter] = new Ship(x, y, length, orientation, armored);
-    }
-
-    int getWidth () {
-        return width;
-    }
-
-    int getHeight () {
-        return height;
     }
 
     public boolean isClear (Ship schiff){
@@ -344,15 +336,15 @@ public class Field {
         throw new IllegalArgumentException();
     }
 
-    boolean isAllowed (Ship schiff){
-        if ("H".equalsIgnoreCase(schiff.getOrientation()) && ((schiff.getXCoord() >= 0) && (schiff.getXCoord() <= width) && (schiff.getXCoord() + schiff.getSize() <= width) && (schiff.getYCoord() >= 0) && (schiff.getYCoord() < height))) {
-            return isClear(schiff);
-        } else if("V".equalsIgnoreCase(schiff.getOrientation()) && ((schiff.getYCoord() >= 0) && (schiff.getYCoord() <= height) && (schiff.getYCoord() + schiff.getSize() <= height) && (schiff.getXCoord() >= 0) && (schiff.getXCoord() < width))) {
-            return isClear(schiff);
-        } else {
-            return false;
-        }
-    }
+//    boolean isAllowed (Ship schiff){
+//        if ("H".equalsIgnoreCase(schiff.getOrientation()) && ((schiff.getXCoord() >= 0) && (schiff.getXCoord() <= size) && (schiff.getXCoord() + schiff.getSize() <= size) && (schiff.getYCoord() >= 0) && (schiff.getYCoord() < size))) {
+//            return isClear(schiff);
+//        } else if("V".equalsIgnoreCase(schiff.getOrientation()) && ((schiff.getYCoord() >= 0) && (schiff.getYCoord() <= size) && (schiff.getYCoord() + schiff.getSize() <= size) && (schiff.getXCoord() >= 0) && (schiff.getXCoord() < size))) {
+//            return isClear(schiff);
+//        } else {
+//            return false;
+//        }
+//    }
 
     public void checkGameOver(String winnerName) {
         if (!Main.gameOver) {
@@ -382,7 +374,7 @@ public class Field {
     void shotsInBarrier() {
         for (Ship ship : ships) {
             if (ship.destroyed()) {
-                if ("H".equalsIgnoreCase(ship.getOrientation())) {
+                if (ship.isHorizontal()) {
                     placeShotAutomated(ship.getXCoord() - 1, ship.getYCoord());
                     placeShotAutomated(ship.getXCoord() + ship.getSize(), ship.getYCoord());
                     for (int j = 0; j < ship.getSize(); j++) {
@@ -403,7 +395,7 @@ public class Field {
     }
 
     boolean placeShotAutomated(int x, int y) {
-        if(x >= 0 && x <= width - 1 && y >= 0 && y <= height - 1) {
+        if(x >= 0 && x <= size - 1 && y >= 0 && y <= size - 1) {
             for(int i = 0; i < shotCounter; i++) {
                 if(shots[i].isAt(x, y)) {
                     return false;

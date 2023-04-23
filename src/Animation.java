@@ -4,8 +4,7 @@ public class Animation {
     AnimationBlock[] animationBlocks = new AnimationBlock[30];
     int animationCounter = 0;
 
-//    TODO: Brauche ich spielfeld irgendwo? => (Wo) wird an die Größe des Spielfelds angepasst?
-    Animation(Ship ship){ //, Field field){
+    Animation(Ship ship){
         this.active = true;
 
         if(ship.isHorizontal()) {

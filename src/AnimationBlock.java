@@ -26,24 +26,24 @@ public class AnimationBlock {
 
         randomSymbols.put(0, "؎");
         randomSymbols.put(1, "؏");
-        randomSymbols.put(2, "߶");
-        randomSymbols.put(3, "༚");
+        randomSymbols.put(2, "#");
+        randomSymbols.put(3, "༚༚");
         randomSymbols.put(4, "༜");
         randomSymbols.put(5, "࿀");
         randomSymbols.put(6, "༞");
-        randomSymbols.put(7, "࿏");
-        randomSymbols.put(8, "࿏");
+        randomSymbols.put(7, "=");
+        randomSymbols.put(8, "\"");
         randomSymbols.put(9, "℺");
-        randomSymbols.put(10, "⅏");
-        randomSymbols.put(11, "↜");
-        randomSymbols.put(12, "↟");
-        randomSymbols.put(13, "↭");
-        randomSymbols.put(14, "↯");
-        randomSymbols.put(15, "⇝");
-        randomSymbols.put(16, "⌀");
+        randomSymbols.put(10, "?");
+        randomSymbols.put(11, "§");
+        randomSymbols.put(12, "%");
+        randomSymbols.put(13, "&");
+        randomSymbols.put(14, "\\");
+        randomSymbols.put(15, ">");
+        randomSymbols.put(16, "<");
         randomSymbols.put(17, "⌘");
-        randomSymbols.put(18, "⌔");
-        randomSymbols.put(19, "⌾");
+        randomSymbols.put(18, "°");
+        randomSymbols.put(19, "^");
 
         System.out.print(randomSymbols.get(generator.nextInt(20)) + Main.ANSI_RESET);
 

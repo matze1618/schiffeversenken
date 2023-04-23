@@ -7,22 +7,24 @@ public class Ship {
     private final HashSet<Coordinate> periphery = new HashSet<>();
     private final int size;
 //    private String orientation;
-    private boolean horizontal;
+    private boolean isHorizontal;
     public int aniBlocks = 0;
     private int lives;
+    private final boolean armored;
 
     public int getLives() {
         return lives;
     }
 
-    private final boolean armored;
+    public Coordinate getBasePosition() {
+        return basePosition;
+    }
 
-    Ship(int x, int y, int size, String orientation, boolean armored){
+    Ship(int x, int y, int size, boolean isHorizontal, boolean armored){
         this.basePosition = new Coordinate(x, y);
         this.size = size;
         this.lives = size;
-//        this.orientation = orientation.toUpperCase();
-        this.horizontal = (Objects.equals(orientation.toUpperCase(), "H"));
+        this.isHorizontal = isHorizontal;
         this.armored = armored;
 
         setAllPositions();
@@ -30,7 +32,8 @@ public class Ship {
     }
 
     private void setAllPositions(){
-        if (horizontal){
+        allPositions.clear();
+        if (isHorizontal){
             for(int i = 0; i < size; i++){
                 allPositions.add(new Coordinate(basePosition.getX() + i, basePosition.getY()));
             }
@@ -42,7 +45,8 @@ public class Ship {
     }
 
     private void setPeriphery(){
-        if (horizontal) {
+        periphery.clear();
+        if (isHorizontal) {
             if (!(basePosition.getX() == 0)) {
                 periphery.add(new Coordinate(basePosition.getX() - 1, basePosition.getY()));
             }
@@ -97,8 +101,15 @@ public class Ship {
     }
 
     public void setShip(int xCoord, int yCoord, String orientation) {
-//        this.orientation = orientation;
-        this.horizontal = (Objects.equals(orientation.toUpperCase(), "H"));
+        this.isHorizontal = (Objects.equals(orientation.toUpperCase(), "H"));
+        this.basePosition = new Coordinate(xCoord, yCoord);
+
+        setAllPositions();
+        setPeriphery();
+    }
+
+    public void setShip(int xCoord, int yCoord, boolean isHorizontal) {
+        this.isHorizontal = isHorizontal;
         this.basePosition = new Coordinate(xCoord, yCoord);
 
         setAllPositions();
@@ -118,19 +129,18 @@ public class Ship {
     }
 
     public boolean isHorizontal() {
-        return horizontal;
+        return isHorizontal;
     }
 
-    //    public String getOrientation() {
-//        return orientation;
-//    }
-
+    public HashSet<Coordinate> getAllPositions() {
+        return allPositions;
+    }
 
     //TODO Wird hier else{return 0;} erreicht?
     //TODO: Warum hat jeder Fall return 0?
     //TODO: Modellierung über Klasse oder Enum, statt Informationen durch Pseudo-Zahlen abzubilden?
     public int isAt(int x, int y) {
-        if (horizontal && x >= basePosition.getX() && x <= basePosition.getX() + size -1 && y == basePosition.getY()) {
+        if (isHorizontal && x >= basePosition.getX() && x <= basePosition.getX() + size -1 && y == basePosition.getY()) {
 
             if(x == basePosition.getX()) return 4;
             else if(x == basePosition.getX() + size -1) return 6;
@@ -138,7 +148,7 @@ public class Ship {
             else{return 0;}
 
 
-        } else if (!horizontal && y >= basePosition.getY() && y <= basePosition.getY() + size -1 && x == basePosition.getX()) {
+        } else if (!isHorizontal && y >= basePosition.getY() && y <= basePosition.getY() + size -1 && x == basePosition.getX()) {
             if(y == basePosition.getY()) return 1;
             else if(y == basePosition.getY() + size -1) return 3;
             else if(y < basePosition.getY() + size -1) return 2;
@@ -148,7 +158,7 @@ public class Ship {
     }
 
     public boolean isBlocked(Ship ship) {
-        if (horizontal) {
+        if (isHorizontal) {
             for (int i = 0; i < ship.getSize(); i++) {
                 if (isAtToBool(ship.getXCoord() + i, ship.getYCoord()) || isAtToBool(ship.getXCoord() - 1 + i, ship.getYCoord()) || isAtToBool(ship.getXCoord() + 1 + i, ship.getYCoord()) || isAtToBool(ship.getXCoord() + i, ship.getYCoord() - 1) || isAtToBool(ship.getXCoord() + i, ship.getYCoord() + 1)) {
                     return true;
@@ -196,11 +206,23 @@ public class Ship {
         field.aniCounter++;
     }
 
-    public boolean isAllowed(int size){
-        for (Coordinate coordinate : allPositions){
-            if (!coordinate.isValid(size)){
-                return false;
+    public boolean isAllowedOn(Field field){
+        if (Objects.isNull(isHorizontal) || Objects.isNull(basePosition)){
+            return false;
+        }
+        //TODO: Does it make sense to switch inner and outer for?
+        for (Coordinate coordinate : field.getCoordinatesOccupiedByShips()) {
+            for (Coordinate position : periphery){
+                if (coordinate.equalTo(position)) {
+                    return false;
+                }
             }
+            for (Coordinate position : allPositions){
+                if (coordinate.equalTo(position)) {
+                    return false;
+                }
+            }
+            //this order of checks gives a slight advantage, because it is quite unlike that another ship is positioned within this one. Thus in most cases the check on the periphery should reveal that the ship is not allowed.
         }
         return true;
     }

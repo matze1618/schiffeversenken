@@ -14,6 +14,19 @@ public class Main {
     public static boolean gameOver = false;
 
     public static void main(String[] args) throws InterruptedException {
+//        String[] signsArray = {"\\", ">", "<", "°", "^", "⌘"};
+//
+//        for (String sign : signsArray) {
+//            for (int i = 0; i < 10; i++){
+//                System.out.print(sign);
+//            }
+//            System.out.println();
+//            for (int i = 0; i < 10; i++){
+//                System.out.print("~");
+//            }
+//            System.out.println();
+//        }
+
         Player player1 = new Player(ANSI_GREEN + "Frederik" + ANSI_RESET);
         Player player2;
 
@@ -47,50 +60,50 @@ public class Main {
     }
 
     static void test(Player player1, Player player2) throws InterruptedException {
-        player1.field.placeShip(0, 0, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(0, 0, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(0, 2, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(0, 2, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(0, 4, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(0, 4, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(0, 6, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(0, 6, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(0, 8, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(0, 8, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
 
-        player1.field.placeShip(7, 9, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(7, 9, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(8, 7, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(8, 7, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(8, 5, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(8, 5, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(8, 3, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(8, 3, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(9, 1, "H", player1.schiffe[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShip(9, 1, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
         player1.field.draw(true);
 
 
-        player2.field.placeShip(0, 0, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(0, 0, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(0, 2, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(0, 2, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(0, 4, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(0, 4, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(0, 6, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(0, 6, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(0, 8, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(0, 8, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
 
-        player2.field.placeShip(7, 9, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(7, 9, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(8, 7, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(8, 7, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(8, 5, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(8, 5, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(8, 3, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(8, 3, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(9, 1, "H", player1.schiffe[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShip(9, 1, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
         player2.field.draw(true);
 

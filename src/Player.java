@@ -1,26 +1,20 @@
 import java.util.InputMismatchException;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class Player {
+public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
     public boolean switchDraw = true;
     protected String name = "";
     public Field field = new Field();
-
-    Random generator = new Random();
-
+    Random random = new Random();
     boolean botSetShips = true;
-
-    byte powerup = 0; //0 = nichts, 1 = big shot, 2 = line shot, 3 = radar
-
+    byte powerup = 0; //0 = nichts, 1 = big shot, 2 = line shot, 3 = radar //TODO: Enum?
     Player() {}
     Player(String name) {this.name = name;}
-
-    public Ship[] schiffe = {new Ship(1), new Ship(2), new Ship(2), new Ship(2), new Ship(3), new Ship(3), new Ship(3), new Ship(4), new Ship(4), new Ship(5)};
+    public Ship[] ships = {new Ship(1), new Ship(2), new Ship(2), new Ship(2), new Ship(3), new Ship(3), new Ship(3), new Ship(4), new Ship(4), new Ship(5)};
     public Ship[] schiffeAD = {new Ship(2), new Ship(2), new Ship(3), new Ship(3), new Ship(3, true), new Ship(4), new Ship(4, true), new Ship(5), new Ship(5), new Ship(6)};
-
-    //public int[] schiffe = {1, 2, 2, 2, 3, 3, 3, 4, 4, 5};
 
     Scanner scan = new Scanner(System.in);
 
@@ -58,11 +52,6 @@ public class Player {
         }
     }
 
-    //TODO: Hat diese Lücke eine Bedeutung?
-
-
-
-
     public void setSpielfeldSizeCatch(Field enemy) {
         try {
             setSpielfeldSize(enemy);
@@ -71,9 +60,6 @@ public class Player {
             setSpielfeldSizeCatch(enemy);
         }
     }
-
-    //TODO: Hat diese Lücke eine Bedeutung?
-
 
     public void setSpielfeldSize(Field enemy) throws IllegalArgumentException{
         System.out.println("Wie lang soll die Seitenlänge eures Spielfeldes sein? (mindestend 10 und maximal 26)");
@@ -85,9 +71,6 @@ public class Player {
             enemy.setSize(input);
         }
     }
-
-    //TODO: Hat diese Lücke eine Bedeutung?
-
 
     public void setNameInput(int spielerNummer) {
         System.out.println("Spieler " + spielerNummer + ", gib deinen Namen ein!");
@@ -112,65 +95,49 @@ public class Player {
         this.name = colour + name + Main.ANSI_RESET;
     }
 
-    //TODO: Hat diese Lücke eine Bedeutung?
-
-//    TODO: Geht diese Methode schöner?
     public boolean randomPlaceShip(Field enemy) throws InterruptedException { //TODO: hier scheint ein Fehler zu sein. Ein Schiffe hat anscheinend die Coordinaten von zwei Schiffen bekommen.
-//        int yCoord;
-        if (Main.status == Main.Status.PICKPHASEAD) {
-            System.arraycopy(schiffeAD, 0, schiffe, 0, schiffeAD.length);
-        }
-
         int x;
         int y;
-        String orientation;
+        boolean isHorizontal;
+        Random random = new Random();
 
-        while(true) {
-            Random random = new Random();
-            x = random.nextInt(enemy.getSize());
-            y = random.nextInt(enemy.getSize());
-            if(random.nextBoolean()){
-                orientation = "H";
-            } else {
-                orientation = "V";
-            }
-
-            schiffe[9 - field.addCounter].setShip(x - 1, y, orientation.toUpperCase());
-
-            if (schiffe[9 - field.addCounter].isAllowed(field.getSize())) {
-                field.placeShip(x - 1, y, orientation, schiffe[9 - field.addCounter].getSize(), schiffe[9- field.addCounter].isArmored());
-                field.addCounter++;
-                if (field.addCounter == 10) {
-                    field.draw(true);
-                    System.out.print("\033[H\033[2J");
-                    System.out.flush();
-                    System.out.println("Drücke ENTER um fortzufahren!");
-                    scan.nextLine();
-                    if (enemy.addCounter == 10) {
-                        if(Main.status == Main.Status.PICKPHASEAD){Main.status = Main.Status.ATCKAD;}
-                        else{Main.status = Main.Status.ATCK;}
-                        System.out.print("\033[H\033[2J");
-                        System.out.flush();
-                        field.draw(true);
-                    } else {
-                        field.draw(true);
-                        TimeUnit.MILLISECONDS.sleep(1500);
-                        System.out.print("\033[H\033[2J");
-                        System.out.flush();
-                    }
-                    return false;
-                } else {
-                    System.out.print("\033[H\033[2J");
-                    System.out.flush();
-                }
-            }
+        if (Main.status == Main.Status.PICKPHASEAD) {
+            System.arraycopy(schiffeAD, 0, ships, 0, schiffeAD.length);
         }
+
+        for (Ship ship : ships) {
+            while (!ship.isAllowedOn(field)) {
+                isHorizontal = random.nextBoolean();
+                x = random.nextInt(isHorizontal ? (enemy.getSize() - ship.getSize()) : enemy.getSize()); //TODO: Ist das so richtig?
+                y = random.nextInt(isHorizontal ? (enemy.getSize() - 1) : (enemy.getSize() - ship.getSize()) + 1); //TODO: Ist das so richtig?
+                ship.setShip(x, y, isHorizontal);
+//                System.out.println("x: " + x + " y: " + y);
+            }
+
+            field.placeShip(ship);
+            field.addCounter++;
+        }
+
+//        for (Ship ship : field.ships){
+//            System.out.println("x: " + ship.getXCoord() + " y: " + ship.getYCoord() + " size: " + ship.getSize());
+//        }
+
+        field.draw(true);
+        flush();
+        System.out.println("Drücke ENTER um fortzufahren!");
+        scan.nextLine();
+        if (enemy.addCounter == 10) {
+            if(Main.status == Main.Status.PICKPHASEAD){Main.status = Main.Status.ATCKAD;}
+            else{Main.status = Main.Status.ATCK;}
+            flush();
+            field.draw(true);
+        } else {
+            field.draw(true);
+            TimeUnit.MILLISECONDS.sleep(1500);
+            flush();
+        }
+        return false; // TODO: break;
     }
-
-    //TODO: Hat diese Lücke eine Bedeutung?
-
-
-
 
     public boolean inputTryExceptions(Field enemy) {
         try {
@@ -181,9 +148,6 @@ public class Player {
             return true;
         }
     }
-
-    //TODO: Hat diese Lücke eine Bedeutung?
-
 
     public boolean input(Field enemy) throws InterruptedException, IllegalArgumentException {
         if(botSetShips && (Main.status == Main.Status.PICKPHASE || Main.status == Main.Status.PICKPHASEAD)) {
@@ -201,61 +165,65 @@ public class Player {
         int yCoord;
         if (Main.status == Main.Status.PICKPHASE || Main.status == Main.Status.PICKPHASEAD) {
             if(Main.status == Main.Status.PICKPHASEAD){
-                System.arraycopy(schiffeAD, 0, schiffe, 0, schiffeAD.length);
+                System.arraycopy(schiffeAD, 0, ships, 0, schiffeAD.length);
             }
 
             field.draw(true);
 
-            System.out.println("Gib die Spalte und Zeile für den Startpunkt und die Orientierung für dein Schiff mit der Länge " + schiffe[9 - field.addCounter].getSize() + " ein, " + name + ".");
+            System.out.println("Gib die Spalte und Zeile für den Startpunkt und die Orientierung für dein Schiff mit der Länge " + ships[9 - field.addCounter].getSize() + " ein, " + name + ".");
 
             int x = scan.nextInt();
             String y = scan.next();
             String orientation = scan.next();
 
             try{
-                yCoord = enemy.stringToYCoord(y.toUpperCase());
+                yCoord = stringToYCoord(y.toUpperCase());
             } catch (IllegalArgumentException | NullPointerException e){
                 System.out.println("Die Eingabe ist ungültig. Gib etwas anderes ein!");
                 return true;
             }
 
-            schiffe[9 - field.addCounter].setShip(x - 1, yCoord, orientation.toUpperCase());
+            ships[9 - field.addCounter].setShip(x - 1, yCoord, orientation.toUpperCase());
 
-            if(schiffe[9 - field.addCounter].isAllowed(field.getSize())) {
-                field.placeShip(x - 1, field.stringToYCoord(y.toUpperCase()), orientation.toUpperCase(), schiffe[9 - field.addCounter].getSize(), schiffe[9- field.addCounter].isArmored());
+            if(ships[9 - field.addCounter].isAllowedOn(field)) {
+                field.placeShip(x - 1, stringToYCoord(y.toUpperCase()), Objects.equals(orientation.toUpperCase(), "H"), ships[9 - field.addCounter].getSize(), ships[9- field.addCounter].isArmored());
                 field.addCounter++;
                 if(field.addCounter == 10) {
                     field.draw(true);
-                    System.out.print("\033[H\033[2J");
-                    System.out.flush();
+                    flush();
                     System.out.println("Drücke ENTER um fortzufahren!");
                     scan.nextLine();
                     if (enemy.addCounter == 10) {
                         if(Main.status == Main.Status.PICKPHASEAD){Main.status = Main.Status.ATCKAD;}
                         else{Main.status = Main.Status.ATCK;}
-                        System.out.print("\033[H\033[2J");
-                        System.out.flush();
+                        flush();
                         field.draw(true);
                         return false;
-                    } else{ field.draw(true); TimeUnit.MILLISECONDS.sleep(1500); System.out.print("\033[H\033[2J"); System.out.flush(); return false;}
+                    } else{
+                        field.draw(true);
+                        TimeUnit.MILLISECONDS.sleep(1500);
+                        flush();
+                        return false;
+                    }
                 }
-                else{System.out.print("\033[H\033[2J"); System.out.flush(); return true;  }
+                else{
+                    flush();
+                    return true;
+                }
             } else {
                 System.out.println("Bitte wähle eine neue Position, " + name + "!");
                 TimeUnit.MILLISECONDS.sleep(1500);
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
+                flush();
                 return true;
             }
         }
 
-        //TODO: Hat diese Lücke eine Bedeutung?
+
 
         //TODO: Geht diese Methode schöner?
         else if (Main.status == Main.Status.ATCK || Main.status == Main.Status.ATCKAD) {
             if(switchDraw){
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
+                flush();
                 enemy.draw(false);
                 switchDraw = false;
             }
@@ -266,10 +234,9 @@ public class Player {
                 String y = scan.next();
 
                 try {
-                    yCoord = enemy.stringToYCoord(y.toUpperCase());
+                    yCoord = stringToYCoord(y.toUpperCase());
                 } catch (IllegalArgumentException | NullPointerException e) {
-                    System.out.print("\033[H\033[2J");
-                    System.out.flush();
+                    flush();
                     enemy.draw(false);
                     System.out.println("Die Eingabe ist ungültig. Gib etwas anderes ein!");
                     return true;
@@ -281,23 +248,20 @@ public class Player {
                         return true;
                     }
 
-                    if (enemy.shots[enemy.shotCounter - 1].checkHit(enemy)) { ///////////////////////Getroffen
+                    if (enemy.getLastShot().isHit(enemy)) { ///////////////////////Getroffen
                         do{
-                            System.out.print("\033[H\033[2J");
-                            System.out.flush();
+                            flush();
                             enemy.draw(false);
                         } while(enemy.showAnimation);
 
-                        System.out.print("\033[H\033[2J");
-                        System.out.flush();
+                        flush();
                         enemy.draw(false);
 
                         System.out.println("Getroffen!");
                         enemy.checkGameOver(name);
                         return true;
                     } else { /////////////////////////////// nicht getroffen
-                        System.out.print("\033[H\033[2J");
-                        System.out.flush();
+                        flush();
                         enemy.draw(false);
 
                         if (Main.status == Main.Status.ATCKAD){
@@ -308,8 +272,7 @@ public class Player {
                     TimeUnit.MILLISECONDS.sleep(1500);
                     return false;
                 } else {///////////////////////außerhalb des spielfeldes
-                    System.out.print("\033[H\033[2J");
-                    System.out.flush();
+                    flush();
                     enemy.draw(false);
                     System.out.println("Da können garkeine Schiffe sein... denk nochmal drüber nach!");
                     enemy.checkGameOver(name);
@@ -337,31 +300,88 @@ public class Player {
         return true;
     }
 
+    //TODO: Durch  HashMap verschönern? => I bid you ASCII-Code
+    public int stringToYCoord(String character){
+        switch (character) {
+            case ("A"):
+                return 0;
+            case ("B"):
+                return 1;
+            case ("C"):
+                return 2;
+            case ("D"):
+                return 3;
+            case ("E"):
+                return 4;
+            case ("F"):
+                return 5;
+            case ("G"):
+                return 6;
+            case ("H"):
+                return 7;
+            case ("I"):
+                return 8;
+            case ("J"):
+                return 9;
+            case ("K"):
+                return 10;
+            case ("L"):
+                return 11;
+            case ("M"):
+                return 12;
+            case ("N"):
+                return 13;
+            case ("O"):
+                return 14;
+            case ("P"):
+                return 15;
+            case ("Q"):
+                return 16;
+            case ("R"):
+                return 17;
+            case ("S"):
+                return 18;
+            case ("T"):
+                return 19;
+            case ("U"):
+                return 20;
+            case ("V"):
+                return 21;
+            case ("W"):
+                return 22;
+            case ("X"):
+                return 23;
+            case ("Y"):
+                return 24;
+            case ("Z"):
+                return 25;
+        }
+        throw new IllegalArgumentException();
+    }
+
     public boolean tryShot(Field enemy, int x, int yCoord) throws InterruptedException {
-        for (int i = 0; i < enemy.shotCounter; i++) {
-            if (enemy.shots[i].isAt(x - 1, yCoord)) {
+        for (Shot shot : enemy.shots) {
+            if (shot.isAt(new Coordinate(x - 1, yCoord))) {
                 do{
-                    System.out.print("\033[H\033[2J");
-                    System.out.flush();
+                    flush();
                     enemy.draw(false);
                 } while(enemy.showAnimation);
 
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
+                flush();
                 enemy.draw(false);
                 return true;
             }
         }
-        Shot schuss = new Shot(x - 1, yCoord, true);
 
-        enemy.shots[enemy.shotCounter] = schuss;
-        enemy.shotCounter++;
+        Shot shot = new Shot(x - 1, yCoord, true);
+
+        enemy.placeShot(shot);
         return false;
     }
 
     public void getPowerUps() {
-        if (generator.nextInt(100) >= 40) {
-            int random = generator.nextInt(100);
+        if (random.nextInt(100) >= 40) {
+            int random = this.random.nextInt(100);
             if (random >= 66) {
                 powerup = 1;
             } else if (random >= 33) {
@@ -374,7 +394,7 @@ public class Player {
         }
         System.out.println("Ins Wasser geschossen!");
         switch (powerup) {
-            //TODO: HashMap?
+            //TODO: HashMap? => Enum?
             case 1 -> System.out.println("Du hast einen Big Shot als nächsten Schuss!");
             case 2 -> System.out.println("Du hast einen Line Shot als nächsten Schuss!");
             case 3 -> System.out.println("Du hast ein Radar bekommen!");
@@ -388,27 +408,26 @@ public class Player {
         if(coord.matches("[A-Za-z]+")){
             for(int i=0; i <= enemy.getSize(); i++){
                 clear = true;
-                for(int j = 0; j < enemy.shotCounter; j++){
-                    if(enemy.shots[j].isAt(i, enemy.stringToYCoord(coord.toUpperCase()))){
+                for (Shot shot : enemy.shots){
+                    if(shot.isAt(new Coordinate(i, stringToYCoord(coord.toUpperCase())))){
                         clear = false;
                     }
                 }
+
                 if(clear) {
-                    Shot schuss = new Shot(i, enemy.stringToYCoord(coord.toUpperCase()), true);
-                    enemy.shots[enemy.shotCounter] = schuss;
-                    enemy.shotCounter++;
-                    if(schuss.checkHit(enemy)){
+                    Shot shot = new Shot(i, stringToYCoord(coord.toUpperCase()), true);
+                    enemy.placeShot(shot);
+
+                    if(shot.isHit(enemy)){
                         do{
-                            System.out.print("\033[H\033[2J");
-                            System.out.flush();
+                            flush();
                             enemy.draw(false);
                         } while(enemy.showAnimation);
                         enemy.checkGameOver(name);
                     }
                 }
             }
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            flush();
             enemy.draw(false);
             powerup = 0;
             TimeUnit.MILLISECONDS.sleep(1500);
@@ -416,27 +435,24 @@ public class Player {
         else{
             for(int j=0; j < enemy.getSize(); j++){
                 clear = true;
-                for(int i = 0; i < enemy.shotCounter; i++){
-                    if(enemy.shots[i].isAt(Integer.parseInt(coord)-1, j)){
+                for (Shot shot : enemy.shots){
+                    if(shot.isAt(new Coordinate(Integer.parseInt(coord)-1, j))) {
                         clear = false;
                     }
                 }
+
                 if(clear) {
-                    Shot schuss = new Shot(Integer.parseInt(coord) - 1, j, true);
-                    enemy.shots[enemy.shotCounter] = schuss;
-                    enemy.shotCounter++;
-                    if (schuss.checkHit(enemy)) {
+                    Shot shot = new Shot(Integer.parseInt(coord) - 1, j, true);
+                    enemy.placeShot(shot);
+                    if (shot.isHit(enemy)) {
                         do {
-                            System.out.print("\033[H\033[2J");
-                            System.out.flush();
-                            enemy.draw(false);
+                            flush();
                         } while (enemy.showAnimation);
                         enemy.checkGameOver(name);
                     }
                 }
             }
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            flush();
             enemy.draw(false);
             powerup = 0;
             TimeUnit.MILLISECONDS.sleep(1500);
@@ -446,24 +462,23 @@ public class Player {
     //TODO: Geht diese Methode schöner?
     void placeBigShot(int x, String y, Field enemy) throws InterruptedException {
         boolean clear;
-        for(int j = enemy.stringToYCoord(y.toUpperCase()) - 1; j <= enemy.stringToYCoord(y.toUpperCase()) + 1; j++){
+        for(int j = stringToYCoord(y.toUpperCase()) - 1; j <= stringToYCoord(y.toUpperCase()) + 1; j++){
             for(int i = x-1; i <= x+1; i++){
                 clear = true;
                 if(i > 0 && i <= enemy.getSize() && j >= 0 && j < enemy.getSize()) {
-                    for (int u = 0; u < enemy.shotCounter; u++) {
-                        if (enemy.shots[u].isAt(i - 1, j)) {
+                    for (Shot shot : enemy.shots) {
+                        if (shot.isAt(new Coordinate(i - 1, j))) {
                             clear = false;
                         }
                     }
-                    if (clear) {
-                        Shot schuss = new Shot(i - 1, j, true);
-                        enemy.shots[enemy.shotCounter] = schuss;
-                        enemy.shotCounter++;
 
-                        if (schuss.checkHit(enemy)) {
+                    if (clear) {
+                        Shot shot = new Shot(i - 1, j, true);
+                        enemy.placeShot(shot);
+
+                        if (shot.isHit(enemy)) {
                             do {
-                                System.out.print("\033[H\033[2J");
-                                System.out.flush();
+                                flush();
                                 enemy.draw(false);
                             } while (enemy.showAnimation);
                             enemy.checkGameOver(name);
@@ -472,10 +487,14 @@ public class Player {
                 }
             }
         }
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        flush();
         enemy.draw(false);
         powerup = 0;
         TimeUnit.MILLISECONDS.sleep(1500);
+    }
+
+    public void flush() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 }

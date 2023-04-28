@@ -1,10 +1,18 @@
 public class Shot {
     private final Coordinate position;
-    private final boolean placedManually;
+    private final boolean isPlacedManually;
+    private final boolean isHit;
 
-    Shot(int x, int y, boolean placedManually){
+    Shot(int x, int y, boolean isPlacedManually, Field field){
         position = new Coordinate(x, y);
-        this.placedManually = placedManually;
+        this.isPlacedManually = isPlacedManually;
+        this.isHit = checkHit(field);
+    }
+
+    Shot(Coordinate position, boolean isPlacedManually, Field field){
+        this.position = position;
+        this.isPlacedManually = isPlacedManually;
+        this.isHit = checkHit(field);
     }
 
     public int getX() {
@@ -15,15 +23,19 @@ public class Shot {
         return position.getY();
     }
 
-    public boolean getPlacedManually() {
-        return placedManually;
+    public boolean isPlacedManually() {
+        return isPlacedManually;
     }
 
-    public boolean isHit(Field spielfeld){ //TODO: Make an attribute out of this to only check once. If it is a hit, it will always be a hit.
-        for(int i = 0; i < spielfeld.addCounter; i++){
-            if(spielfeld.ships[i].isAtToBool(position.getX(), position.getY())){
-                spielfeld.ships[i].getHit(spielfeld);
-                return !spielfeld.ships[i].isArmored() || spielfeld.ships[i].getLives() < spielfeld.ships[i].getSize() - 1;
+    public boolean isHit() {
+        return isHit;
+    }
+
+    private boolean checkHit(Field field){ //TODO: Make an attribute out of this to only check once. If it is a hit, it will always be a hit.
+        for(int i = 0; i < field.addCounter; i++){
+            if(field.ships[i].isAtToBool(position.getX(), position.getY())){
+                field.ships[i].getHit(field);
+                return !field.ships[i].isArmored() || field.ships[i].getLives() < field.ships[i].getSize() - 1;
             }
         }
         return false;

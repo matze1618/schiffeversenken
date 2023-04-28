@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
+public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen? => Yes, please
     public boolean switchDraw = true;
     protected String name = "";
     public Field field = new Field();
@@ -13,8 +13,8 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
     byte powerup = 0; //0 = nichts, 1 = big shot, 2 = line shot, 3 = radar //TODO: Enum?
     Player() {}
     Player(String name) {this.name = name;}
-    public Ship[] ships = {new Ship(1), new Ship(2), new Ship(2), new Ship(2), new Ship(3), new Ship(3), new Ship(3), new Ship(4), new Ship(4), new Ship(5)};
-    public Ship[] schiffeAD = {new Ship(2), new Ship(2), new Ship(3), new Ship(3), new Ship(3, true), new Ship(4), new Ship(4, true), new Ship(5), new Ship(5), new Ship(6)};
+    public Ship[] ships = {new Ship(5), new Ship(4), new Ship(4), new Ship(3), new Ship(3), new Ship(3), new Ship(2), new Ship(2), new Ship(2), new Ship(1)};
+    public Ship[] schiffeAD = {new Ship(6), new Ship(5), new Ship(5), new Ship(4), new Ship(4, true), new Ship(3), new Ship(3), new Ship(3, true), new Ship(2), new Ship(2)};
 
     Scanner scan = new Scanner(System.in);
 
@@ -52,26 +52,6 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
         }
     }
 
-    public void setSpielfeldSizeCatch(Field enemy) {
-        try {
-            setSpielfeldSize(enemy);
-        } catch (InputMismatchException | IllegalArgumentException e) {
-            System.out.println("Die Eingabe war ungültig, gib etwas anderes ein!");
-            setSpielfeldSizeCatch(enemy);
-        }
-    }
-
-    public void setSpielfeldSize(Field enemy) throws IllegalArgumentException{
-        System.out.println("Wie lang soll die Seitenlänge eures Spielfeldes sein? (mindestend 10 und maximal 26)");
-        int input = scan.nextInt();
-        if(input > 26 || input < 10) {
-            throw new IllegalArgumentException();
-        } else {
-            this.field.setSize(input);
-            enemy.setSize(input);
-        }
-    }
-
     public void setNameInput(int spielerNummer) {
         System.out.println("Spieler " + spielerNummer + ", gib deinen Namen ein!");
         String name = scan.next();
@@ -95,7 +75,7 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
         this.name = colour + name + Main.ANSI_RESET;
     }
 
-    public boolean randomPlaceShip(Field enemy) throws InterruptedException { //TODO: hier scheint ein Fehler zu sein. Ein Schiffe hat anscheinend die Coordinaten von zwei Schiffen bekommen.
+    public boolean randomPlaceShip(Field enemy) throws InterruptedException {
         int x;
         int y;
         boolean isHorizontal;
@@ -108,25 +88,27 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
         for (Ship ship : ships) {
             while (!ship.isAllowedOn(field)) {
                 isHorizontal = random.nextBoolean();
-                x = random.nextInt(isHorizontal ? (enemy.getSize() - ship.getSize()) : enemy.getSize()); //TODO: Ist das so richtig?
-                y = random.nextInt(isHorizontal ? (enemy.getSize() - 1) : (enemy.getSize() - ship.getSize()) + 1); //TODO: Ist das so richtig?
-                ship.setShip(x, y, isHorizontal);
-//                System.out.println("x: " + x + " y: " + y);
+                x = random.nextInt(isHorizontal ? (enemy.getSize() - ship.getSize()) : enemy.getSize());
+                // true: 10 - 1 - 1 = 8
+                // false: 9
+                y = random.nextInt(isHorizontal ? enemy.getSize() : (enemy.getSize() - ship.getSize()));
+                // true: 9
+                // false: 8
+                ship.setShip(x, y, isHorizontal, field);
             }
 
             field.placeShip(ship);
             field.addCounter++;
         }
 
-//        for (Ship ship : field.ships){
-//            System.out.println("x: " + ship.getXCoord() + " y: " + ship.getYCoord() + " size: " + ship.getSize());
-//        }
+        field.shipsAreSet = true;
 
+        //TODO: Only print field once
         field.draw(true);
         flush();
         System.out.println("Drücke ENTER um fortzufahren!");
         scan.nextLine();
-        if (enemy.addCounter == 10) {
+        if (enemy.shipsAreSet) {
             if(Main.status == Main.Status.PICKPHASEAD){Main.status = Main.Status.ATCKAD;}
             else{Main.status = Main.Status.ATCK;}
             flush();
@@ -139,6 +121,11 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
         return false; // TODO: break;
     }
 
+    public void flush() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
     public boolean inputTryExceptions(Field enemy) {
         try {
             return input(enemy);
@@ -149,6 +136,7 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
         }
     }
 
+    //TODO: Das muss schöner
     public boolean input(Field enemy) throws InterruptedException, IllegalArgumentException {
         if(botSetShips && (Main.status == Main.Status.PICKPHASE || Main.status == Main.Status.PICKPHASEAD)) {
             System.out.println("Willst Du die Schiffe zufällig plazieren lassen, " + name + "? j/n");
@@ -183,10 +171,10 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
                 return true;
             }
 
-            ships[9 - field.addCounter].setShip(x - 1, yCoord, orientation.toUpperCase());
+            ships[9 - field.addCounter].setShip(x - 1, yCoord, orientation.toUpperCase(), field);
 
             if(ships[9 - field.addCounter].isAllowedOn(field)) {
-                field.placeShip(x - 1, stringToYCoord(y.toUpperCase()), Objects.equals(orientation.toUpperCase(), "H"), ships[9 - field.addCounter].getSize(), ships[9- field.addCounter].isArmored());
+                field.placeShip(new Ship(x - 1, stringToYCoord(y.toUpperCase()), Objects.equals(orientation.toUpperCase(), "H"), ships[9 - field.addCounter].getSize() , ships[9- field.addCounter].isArmored(), field));
                 field.addCounter++;
                 if(field.addCounter == 10) {
                     field.draw(true);
@@ -218,8 +206,6 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
             }
         }
 
-
-
         //TODO: Geht diese Methode schöner?
         else if (Main.status == Main.Status.ATCK || Main.status == Main.Status.ATCKAD) {
             if(switchDraw){
@@ -248,7 +234,7 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
                         return true;
                     }
 
-                    if (enemy.getLastShot().isHit(enemy)) { ///////////////////////Getroffen
+                    if (enemy.getLastShot().isHit()) { ///////////////////////Getroffen
                         do{
                             flush();
                             enemy.draw(false);
@@ -300,63 +286,12 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
         return true;
     }
 
-    //TODO: Durch  HashMap verschönern? => I bid you ASCII-Code
-    public int stringToYCoord(String character){
-        switch (character) {
-            case ("A"):
-                return 0;
-            case ("B"):
-                return 1;
-            case ("C"):
-                return 2;
-            case ("D"):
-                return 3;
-            case ("E"):
-                return 4;
-            case ("F"):
-                return 5;
-            case ("G"):
-                return 6;
-            case ("H"):
-                return 7;
-            case ("I"):
-                return 8;
-            case ("J"):
-                return 9;
-            case ("K"):
-                return 10;
-            case ("L"):
-                return 11;
-            case ("M"):
-                return 12;
-            case ("N"):
-                return 13;
-            case ("O"):
-                return 14;
-            case ("P"):
-                return 15;
-            case ("Q"):
-                return 16;
-            case ("R"):
-                return 17;
-            case ("S"):
-                return 18;
-            case ("T"):
-                return 19;
-            case ("U"):
-                return 20;
-            case ("V"):
-                return 21;
-            case ("W"):
-                return 22;
-            case ("X"):
-                return 23;
-            case ("Y"):
-                return 24;
-            case ("Z"):
-                return 25;
+    public int stringToYCoord(String yCoord) {
+        if (yCoord.length() == 1 && Character.isUpperCase(yCoord.charAt(0))){
+            return yCoord.charAt(0) - 'A';
+        }else {
+            throw new IllegalArgumentException();
         }
-        throw new IllegalArgumentException();
     }
 
     public boolean tryShot(Field enemy, int x, int yCoord) throws InterruptedException {
@@ -373,10 +308,32 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
             }
         }
 
-        Shot shot = new Shot(x - 1, yCoord, true);
+        Shot shot = new Shot(x - 1, yCoord, true, enemy);
 
         enemy.placeShot(shot);
         return false;
+    }
+
+    ////Start of AD-Mode
+
+    public void setFieldSizeCatch(Field enemy) {
+        try {
+            setFieldSize(enemy);
+        } catch (InputMismatchException | IllegalArgumentException e) {
+            System.out.println("Die Eingabe war ungültig, gib etwas anderes ein!");
+            setFieldSizeCatch(enemy);
+        }
+    }
+
+    public void setFieldSize(Field enemy) throws IllegalArgumentException{
+        System.out.println("Wie lang soll die Seitenlänge eures Spielfeldes sein? (mindestend 10 und maximal 26)");
+        int input = scan.nextInt();
+        if(input > 26 || input < 10) {
+            throw new IllegalArgumentException();
+        } else {
+            this.field.setSize(input);
+            enemy.setSize(input);
+        }
     }
 
     public void getPowerUps() {
@@ -415,10 +372,10 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
                 }
 
                 if(clear) {
-                    Shot shot = new Shot(i, stringToYCoord(coord.toUpperCase()), true);
+                    Shot shot = new Shot(i, stringToYCoord(coord.toUpperCase()), true, enemy);
                     enemy.placeShot(shot);
 
-                    if(shot.isHit(enemy)){
+                    if(shot.isHit()){
                         do{
                             flush();
                             enemy.draw(false);
@@ -442,9 +399,9 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
                 }
 
                 if(clear) {
-                    Shot shot = new Shot(Integer.parseInt(coord) - 1, j, true);
+                    Shot shot = new Shot(Integer.parseInt(coord) - 1, j, true, enemy);
                     enemy.placeShot(shot);
-                    if (shot.isHit(enemy)) {
+                    if (shot.isHit()) {
                         do {
                             flush();
                         } while (enemy.showAnimation);
@@ -473,10 +430,10 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
                     }
 
                     if (clear) {
-                        Shot shot = new Shot(i - 1, j, true);
+                        Shot shot = new Shot(i - 1, j, true, enemy);
                         enemy.placeShot(shot);
 
-                        if (shot.isHit(enemy)) {
+                        if (shot.isHit()) {
                             do {
                                 flush();
                                 enemy.draw(false);
@@ -491,10 +448,5 @@ public class Player { //TODO: Neue Klasse PayerAD hiervon erben lassen?
         enemy.draw(false);
         powerup = 0;
         TimeUnit.MILLISECONDS.sleep(1500);
-    }
-
-    public void flush() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
     }
 }

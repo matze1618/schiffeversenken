@@ -6,7 +6,6 @@ public class Ship {
     private final HashSet<Coordinate> allPositions = new HashSet<>();
     private final HashSet<Coordinate> periphery = new HashSet<>();
     private final int size;
-//    private String orientation;
     private boolean isHorizontal;
     public int aniBlocks = 0;
     private int lives;
@@ -20,7 +19,11 @@ public class Ship {
         return basePosition;
     }
 
-    Ship(int x, int y, int size, boolean isHorizontal, boolean armored){
+    public HashSet<Coordinate> getPeriphery() {
+        return periphery;
+    }
+
+    Ship(int x, int y, boolean isHorizontal, int size, boolean armored, Field field){
         this.basePosition = new Coordinate(x, y);
         this.size = size;
         this.lives = size;
@@ -28,10 +31,10 @@ public class Ship {
         this.armored = armored;
 
         setAllPositions();
-        setPeriphery();
+        setPeriphery(field);
     }
 
-    private void setAllPositions(){
+    public void setAllPositions(){
         allPositions.clear();
         if (isHorizontal){
             for(int i = 0; i < size; i++){
@@ -44,76 +47,62 @@ public class Ship {
         }
     }
 
-    private void setPeriphery(){
+    public void setPeriphery(Field field){
         periphery.clear();
+        HashSet<Coordinate> potentialPeriphery = new HashSet<>();
+
         if (isHorizontal) {
-            if (!(basePosition.getX() == 0)) {
-                periphery.add(new Coordinate(basePosition.getX() - 1, basePosition.getY()));
+            potentialPeriphery.add(new Coordinate(basePosition.getX() - 1, basePosition.getY())); // links
+
+            for (Coordinate coordinate : allPositions){
+                potentialPeriphery.add(new Coordinate(coordinate.getX(), coordinate.getY() + 1)); // drunter
+                potentialPeriphery.add(new Coordinate(coordinate.getX(), coordinate.getY() - 1)); // drüber
             }
-            if (basePosition.getY() == 0) {
-                for (Coordinate coordinate : allPositions) {
-                    periphery.add(new Coordinate(coordinate.getX(), coordinate.getY() + 1));
-                }
-            } else if (basePosition.getY() == 9) { //TODO: Das muss eigentlich field.getY - 1 sein
-                for (Coordinate coordinate : allPositions) {
-                    periphery.add(new Coordinate(coordinate.getX(), coordinate.getY() - 1));
-                }
-            } else {
-                for (Coordinate coordinate : allPositions) {
-                    periphery.add(new Coordinate(coordinate.getX(), coordinate.getY() - 1));
-                    periphery.add(new Coordinate(coordinate.getX(), coordinate.getY() + 1));
-                }
-            }
-            if (!(basePosition.getX() == 9)) { //TODO: Das muss eigentlich field.getX - 1 sein
-                periphery.add(new Coordinate(basePosition.getX() + 1, basePosition.getY()));
-            }
+
+            potentialPeriphery.add(new Coordinate(basePosition.getX() + size, basePosition.getY())); // rechts
         } else {
-            if (!(basePosition.getY() == 0)) {
-                periphery.add(new Coordinate(basePosition.getX(), basePosition.getY() - 1));
+            potentialPeriphery.add(new Coordinate(basePosition.getX(), basePosition.getY() - 1)); // drüber
+
+            for (Coordinate coordinate : allPositions){
+                potentialPeriphery.add(new Coordinate(coordinate.getX() + 1, coordinate.getY())); // rechts
+                potentialPeriphery.add(new Coordinate(coordinate.getX() - 1, coordinate.getY())); // links
             }
-            if (basePosition.getX() == 0) {
-                for (Coordinate coordinate : allPositions) {
-                    periphery.add(new Coordinate(coordinate.getX() + 1, coordinate.getY()));
-                }
-            } else if (basePosition.getY() == 9) { //TODO: Das muss eigentlich field.getX - 1 sein
-                for (Coordinate coordinate : allPositions) {
-                    periphery.add(new Coordinate(coordinate.getX() - 1, coordinate.getY()));
-                }
-            } else {
-                for (Coordinate coordinate : allPositions) {
-                    periphery.add(new Coordinate(coordinate.getX() - 1, coordinate.getY()));
-                    periphery.add(new Coordinate(coordinate.getX() + 1, coordinate.getY()));
-                }
-            }
-            if (!(basePosition.getY() == 9)) { //TODO: Das muss eigentlich field.getY - 1 sein
-                periphery.add(new Coordinate(basePosition.getX(), basePosition.getY() + 1));
+
+            potentialPeriphery.add(new Coordinate(basePosition.getX(), basePosition.getY() + size)); // drunter
+        }
+        for (Coordinate coordinate : potentialPeriphery){
+            if (coordinate.isValid(field.getSize())){
+                periphery.add(coordinate);
             }
         }
     }
 
     Ship(int size){
         this.size = size;
+        this.lives = size;
         this.armored = false;
     }
+
     Ship(int size, boolean armored) {
         this.size = size;
+        this.lives = size;
         this.armored = armored;
     }
 
-    public void setShip(int xCoord, int yCoord, String orientation) {
+    public void setShip(int xCoord, int yCoord, String orientation, Field field) {
         this.isHorizontal = (Objects.equals(orientation.toUpperCase(), "H"));
         this.basePosition = new Coordinate(xCoord, yCoord);
 
         setAllPositions();
-        setPeriphery();
+        setPeriphery(field);
     }
 
-    public void setShip(int xCoord, int yCoord, boolean isHorizontal) {
+    public void setShip(int xCoord, int yCoord, boolean isHorizontal, Field field) {
         this.isHorizontal = isHorizontal;
         this.basePosition = new Coordinate(xCoord, yCoord);
 
         setAllPositions();
-        setPeriphery();
+        setPeriphery(field);
     }
 
     public int getXCoord() {
@@ -157,28 +146,6 @@ public class Ship {
         return 0;
     }
 
-    public boolean isBlocked(Ship ship) {
-        if (isHorizontal) {
-            for (int i = 0; i < ship.getSize(); i++) {
-                if (isAtToBool(ship.getXCoord() + i, ship.getYCoord()) || isAtToBool(ship.getXCoord() - 1 + i, ship.getYCoord()) || isAtToBool(ship.getXCoord() + 1 + i, ship.getYCoord()) || isAtToBool(ship.getXCoord() + i, ship.getYCoord() - 1) || isAtToBool(ship.getXCoord() + i, ship.getYCoord() + 1)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        else{
-            for (int i = 0; i < ship.getSize(); i++) {
-                if (isAtToBool(ship.getXCoord(), ship.getYCoord() + i) || isAtToBool(ship.getXCoord() - 1, ship.getYCoord() + i) || isAtToBool(ship.getXCoord() + 1, ship.getYCoord() + i) || isAtToBool(ship.getXCoord(), ship.getYCoord() - 1 + i) || isAtToBool(ship.getXCoord(), ship.getYCoord() + 1 + i)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-
-    //TODO: Hat diese Lücke eine Bedeutung?
-
     public boolean isAtToBool(int x, int y){
         return isAt(x, y) <= 6 && isAt(x, y) >= 1;
     }
@@ -186,8 +153,13 @@ public class Ship {
     public void getHit(Field field){
         lives--;
         if(destroyed()){
+            try {
+                field.drawWithAnimation(this);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             System.out.println("Du hast ein Schiff mit der Länge " + getSize() + " zerstört!");
-            field.shotsInBarrier();
+            field.shotsInPeriphery(this);
             createAnimation(field);
             aniBlocks = 0;
         }
@@ -210,19 +182,19 @@ public class Ship {
         if (Objects.isNull(isHorizontal) || Objects.isNull(basePosition)){
             return false;
         }
-        //TODO: Does it make sense to switch inner and outer for?
-        for (Coordinate coordinate : field.getCoordinatesOccupiedByShips()) {
-            for (Coordinate position : periphery){
+        for (Coordinate position : periphery){
+            for (Coordinate coordinate: field.getCoordinatesOccupiedByShips()){
                 if (coordinate.equalTo(position)) {
                     return false;
                 }
             }
-            for (Coordinate position : allPositions){
+        }
+        for (Coordinate position : allPositions) {
+            for (Coordinate coordinate : field.getCoordinatesOccupiedByShips()) {
                 if (coordinate.equalTo(position)) {
                     return false;
                 }
             }
-            //this order of checks gives a slight advantage, because it is quite unlike that another ship is positioned within this one. Thus in most cases the check on the periphery should reveal that the ship is not allowed.
         }
         return true;
     }

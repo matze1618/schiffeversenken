@@ -72,7 +72,7 @@ public class Bot extends Player{
             }
         }
 
-        Shot shot = new Shot(x, y, true);
+        Shot shot = new Shot(x, y, true, enemy);
         enemy.shots.add(shot);
 
         for(Ship schiff: enemy.ships) {

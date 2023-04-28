@@ -1,5 +1,7 @@
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+import java.util.Random;
 
 public class Field {
     private int size = 10;
@@ -13,6 +15,10 @@ public class Field {
     int aniCounter = 0;
     private HashSet<Coordinate> coordinatesOccupiedByShips = new HashSet<>();
     private String[][] visualRepresentation;
+    public boolean shipsAreSet = false;
+
+    private String[] animationArray = {"؎", "؏", "#", "༚༚", "࿀", "༞", "\"", "?", "§", "%", "&", "\\", ">", "<", "⌘", "°", "^"};
+
 
     public Field() {
         this.ships = new Ship[10];
@@ -39,26 +45,52 @@ public class Field {
         return coordinatesOccupiedByShips;
     }
 
-    void draw(boolean showShips) throws InterruptedException { //TODO: does hasChange ever make sense?
-        setVisualRepresentation(showShips);
-        for (int row = 0; row <= (size + 2); row++) {
-            for (int column = 0; column <=  (size + 1); column++) {
-                System.out.print(visualRepresentation[row][column]);
-            }
+
+    public void drawWithAnimation(Ship ship) throws InterruptedException{
+        setVisualRepresentation(false);
+        for (int i = 0; i < 40; i++){
+            setAnimation(ship);
+            flush();
+            System.out.println(visualRepresentationToString());
+            Thread.sleep(25);
+        }
+    }
+
+    void flush(){
+        for (int i = 0; i < 20; i++){
             System.out.println();
         }
+    }
+
+    void draw(boolean showShips) {
+        setVisualRepresentation(showShips);
+        System.out.println(visualRepresentationToString());
+    }
+
+    String visualRepresentationToString(){
+        String resultString = "";
+
+        for (int row = 0; row <= (size + 2); row++) {
+            for (int column = 0; column <=  (size + 2); column++) {
+                resultString = resultString + visualRepresentation[row][column];
+            }
+            resultString = resultString + "\n";
+        }
+        return resultString;
     }
 
     private void setVisualRepresentation(boolean showShips) {
         setEmptyField();
         if (showShips){
             setShips();
+        } else {
+            setShipsToHit();
         }
         setHits();
     }
 
     private void setEmptyField(){
-        visualRepresentation = new String[size + 3][size + 2]; //TODO: Ist diese Einteilung sinnvoll hinsichtlich der Definition von x und y?
+        visualRepresentation = new String[size + 3][size + 3]; //TODO: Ist diese Einteilung sinnvoll hinsichtlich der Definition von x und y?
 
         setFirstLines();
         setMiddle();
@@ -67,6 +99,7 @@ public class Field {
 
     private void setFirstLines(){
         visualRepresentation[0][0] = "   |";
+        visualRepresentation[0][size + 2] = "";
         for (int column = 1; column <= size; column++){
             visualRepresentation[0][column] = "  " + column;
         }
@@ -77,6 +110,7 @@ public class Field {
             visualRepresentation[1][column] = "---";
         }
         visualRepresentation[1][size + 1] = "-|";
+        visualRepresentation[1][size + 2] = "";
     }
 
     private void setMiddle(){
@@ -89,6 +123,7 @@ public class Field {
                 visualRepresentation[row][column] = Main.ANSI_BLUE + "~~~" + Main.ANSI_RESET;
             }
             visualRepresentation[row][size + 1] = " |";
+            visualRepresentation[row][size + 2] = "";
         }
     }
 
@@ -98,72 +133,108 @@ public class Field {
             visualRepresentation[size + 2][column] = "---";
         }
         visualRepresentation[size + 2][size + 1] = "-|";
+        visualRepresentation[size + 2][size + 2] = "";
+    }
+
+    private void setShipsToHit(){
+        HashMap<Integer, String> sizeToString = new HashMap<>();
+        sizeToString.put(1, "   ╠■▶");
+        sizeToString.put(2, "   ╠■■■■▶");
+        sizeToString.put(3, "   ╠■■■■■■■▶");
+        sizeToString.put(4, "   ╠■■■■■■■■■■▶");
+        sizeToString.put(5, "   ╠■■■■■■■■■■■■■▶");
+        sizeToString.put(6, "   ╠■■■■■■■■■■■■■■■■▶");
+
+
+        visualRepresentation[1][size + 2] = "   Diese Schiffe musst Du noch treffen:";
+        for (Ship ship : ships) {
+            if (!ship.destroyed()){
+                visualRepresentation[ship.getSize() + 2][size + 2] = visualRepresentation[ship.getSize() + 2][size + 2] + sizeToString.get(ship.getSize());
+            }
+        }
     }
 
     private void setShips(){
         for (Ship ship : ships) {
-            //TODO: Show ships including front and end
+            if (Objects.isNull(ship)){
+                break;
+            }
 
-            if (ship.isHorizontal()){
-                visualRepresentation[ship.getBasePosition().getY() + 2][ship.getBasePosition().getX() + 1] = "╠■■";
-                for (int i = 2; i < ship.getSize(); i++){
-                    visualRepresentation[ship.getBasePosition().getY() + 2][ship.getBasePosition().getX() + i] = "■■■";
-                }
-                visualRepresentation[ship.getBasePosition().getY() + 2][ship.getBasePosition().getX() + ship.getSize()] = "■■▶";
+            if (ship.getSize() == 1) {
+                visualRepresentation[ship.getBasePosition().getY() + 2][ship.getBasePosition().getX() + 1] = "╠■▶";
             } else {
-                visualRepresentation[ship.getBasePosition().getY() + 2][ship.getBasePosition().getX() + 1] = " ▲ ";
-                for (int i = 2; i < ship.getSize(); i++){
-                    visualRepresentation[ship.getBasePosition().getY() + i + 1][ship.getBasePosition().getX() + 1] = " \u2588 ";
+                if (ship.isHorizontal()){
+                    visualRepresentation[ship.getBasePosition().getY() + 2][ship.getBasePosition().getX() + 1] = "╠■■";
+                    for (int i = 2; i < ship.getSize(); i++){
+                        visualRepresentation[ship.getBasePosition().getY() + 2][ship.getBasePosition().getX() + i] = "■■■";
+                    }
+                    visualRepresentation[ship.getBasePosition().getY() + 2][ship.getBasePosition().getX() + ship.getSize()] = "■■▶";
+                } else {
+                    visualRepresentation[ship.getBasePosition().getY() + 2][ship.getBasePosition().getX() + 1] = " ▲ ";
+                    for (int i = 2; i < ship.getSize(); i++){
+                        visualRepresentation[ship.getBasePosition().getY() + i + 1][ship.getBasePosition().getX() + 1] = " \u2588 ";
+                    }
+                    visualRepresentation[ship.getBasePosition().getY() + ship.getSize() + 1][ship.getBasePosition().getX() + 1] = " ╩ ";
                 }
-                visualRepresentation[ship.getBasePosition().getY() + ship.getSize() + 1][ship.getBasePosition().getX() + 1] = " ╩ ";
-
             }
         }
     }
 
     private void setHits(){
         for (Shot shot : shots){
-            if (shot.isHit(this)){
-                visualRepresentation[shot.getX() + 1][shot.getY()] = Main.ANSI_RED + " X " + Main.ANSI_RESET;
-            } else if (!shot.getPlacedManually()) {
-                visualRepresentation[shot.getX() + 1][shot.getY()] = Main.ANSI_CYAN + " X " + Main.ANSI_RESET;
+            if (shot.isHit()){
+                visualRepresentation[shot.getY() + 2][shot.getX() + 1] = Main.ANSI_RED + " X " + Main.ANSI_RESET;
+            } else if (!shot.isPlacedManually()) {
+                visualRepresentation[shot.getY() + 2][shot.getX() + 1] = Main.ANSI_CYAN + " X " + Main.ANSI_RESET;
             } else {
-                visualRepresentation[shot.getX() + 1][shot.getY()] = " X ";
+                visualRepresentation[shot.getY() + 2][shot.getX() + 1] = " X ";
             }
         }
     }
 
-    void placeShip(int x, int y, boolean isHorizontal, int length, boolean armored) {
-        Ship ship = new Ship(x, y, length, isHorizontal, armored);
-        ships[addCounter] = ship;
-        updateOccupiedCoordinates(ship);
+    private void setAnimation(Ship ship){
+        for (Coordinate coordinate : ship.getAllPositions()) {
+            setAnimationBlock(coordinate);
+        }
+        for (Coordinate coordinate : ship.getPeriphery()) {
+            setAnimationBlock(coordinate);
+        }
     }
 
+    private void setAnimationBlock(Coordinate coordinate){
+        Random random = new Random();
+        String colour0 = (random.nextInt(3) < 2 ? Main.ANSI_YELLOW : Main.ANSI_RED);
+        String colour1 = (random.nextInt(3) < 2 ? Main.ANSI_YELLOW : Main.ANSI_RED);
+        String colour2 = (random.nextInt(3) < 2 ? Main.ANSI_YELLOW : Main.ANSI_RED);
+        String symbol0 = animationArray[random.nextInt(animationArray.length)];
+        String symbol1 = animationArray[random.nextInt(animationArray.length)];
+        String symbol2 = animationArray[random.nextInt(animationArray.length)];
+        String reset = Main.ANSI_RESET;
+        String animationBlock = colour0 + symbol0 + reset + colour1 + symbol1 + reset + colour2 + symbol2 + reset;
+
+        visualRepresentation[coordinate.getY() + 2][coordinate.getX() + 1] = animationBlock;
+    }
+
+    void placeShip(int x, int y, boolean isHorizontal, int size, boolean armored){
+        placeShip(new Ship(x, y, isHorizontal, size, armored, this));
+    }
     void placeShip(Ship ship) {
-        ships[addCounter] = ship; //TODO: Ist die Reihenfolge irgendwo wichtig oder kann ich hier eine HashMap draus machen?
+        ships[addCounter] = ship; //TODO: Ist die Reihenfolge irgendwo wichtig oder kann ich hier eine HashMap draus machen? => Ist relevant für die Eingabe und randomPlaceShip
         updateOccupiedCoordinates(ship);
     }
 
     void placeShot(Shot shot){
         shots.add(shot);
         lastShot = shot;
-        if (shot.isHit(this)){
+        if (shot.isHit()){
             lastHit = shot;
         }
     }
+
     private void updateOccupiedCoordinates(Ship ship){
         for (Coordinate coordinate : ship.getAllPositions()){
             coordinatesOccupiedByShips.add(coordinate);
         }
-    }
-
-    public boolean isClear (Ship schiff){
-        for (int i = 0; i < addCounter; i++) {
-            if (ships[i].isBlocked(schiff)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public void checkGameOver(String winnerName) {
@@ -181,53 +252,25 @@ public class Field {
         }
     }
 
-    int shipsAliveByLength(int laenge){
-        int counter = 0;
-        for (Ship ship : ships) {
-            if (ship.getSize() == laenge && !ship.destroyed()) {
-                counter++;
-            }
-        }
-        return counter;
-    }
-
-    void shotsInBarrier() {
-        for (Ship ship : ships) {
-            if (ship.destroyed()) {
-                if (ship.isHorizontal()) {
-                    placeShotAutomated(ship.getXCoord() - 1, ship.getYCoord());
-                    placeShotAutomated(ship.getXCoord() + ship.getSize(), ship.getYCoord());
-                    for (int j = 0; j < ship.getSize(); j++) {
-                        placeShotAutomated(ship.getXCoord() + j, ship.getYCoord() + 1);
-                        placeShotAutomated(ship.getXCoord() + j, ship.getYCoord() - 1);
-                    }
-                } else {
-                    placeShotAutomated(ship.getXCoord(), ship.getYCoord() - 1);
-                    placeShotAutomated(ship.getXCoord(), ship.getYCoord() + ship.getSize());
-                    for (int j = 0; j < ship.getSize(); j++) {
-                        placeShotAutomated(ship.getXCoord() + 1, ship.getYCoord() + j);
-                        placeShotAutomated(ship.getXCoord() - 1, ship.getYCoord() + j);
-                    }
-                }
-
-            }
+    void shotsInPeriphery(Ship ship) {
+        for (Coordinate coordinate : ship.getPeriphery()){
+            placeShotAutomated(coordinate);
         }
     }
 
-    boolean placeShotAutomated(int x, int y) {
-        if(x >= 0 && x <= size - 1 && y >= 0 && y <= size - 1) {
+    boolean placeShotAutomated(Coordinate coordinate) {
+        if(coordinate.isValid(this.size)) {
             for (Shot shot : shots) {
-                if(shot.isAt(new Coordinate(x, y))) {
+                if(shot.isAt(coordinate)) {
                     return false;
                 }
             }
-            Shot shot = new Shot(x, y, false);
+            Shot shot = new Shot(coordinate, false, this);
             shots.add(shot);
-            if (shot.isHit(this)){
+            if (shot.isHit()){
                 lastHit = shot;
             }
-//            shotCounter++;
         }
-        return false;
+        return false; //TODO: false either way?
     }
 }

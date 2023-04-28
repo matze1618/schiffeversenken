@@ -42,7 +42,7 @@ public class Main {
         if(status == Status.PICKPHASEAD) {
             player1.field.setSize(0);
             player2.field.setSize(0);
-            player1.setSpielfeldSizeCatch(player2.field);
+            player1.setFieldSizeCatch(player2.field);
         }
 
 

@@ -1,3 +1,4 @@
+import java.sql.Array;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -23,7 +24,7 @@ public class AnimationBlock {
         }
 
         HashMap<Integer, String> randomSymbols = new HashMap<>();
-
+        String[] animationArray = {"؎", "؏", "#", "༚༚", "࿀", "༞", "\"", "℺", "?", "§", "%", "&", "\\", ">", "<", "⌘", "°", "^"};
         randomSymbols.put(0, "؎");
         randomSymbols.put(1, "؏");
         randomSymbols.put(2, "#");

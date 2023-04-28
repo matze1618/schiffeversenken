@@ -62,6 +62,7 @@ public class Animation {
         }
         return isRendered;
     }
+
     public boolean isActive() {
         return active;
     }

@@ -20,6 +20,6 @@ public class Coordinate {
     }
 
     public boolean isValid(int size){
-        return (x > 0 && x < size && y > 0 && y < size);
+        return (x >= 0 && x < size && y >= 0 && y < size);
     }
 }

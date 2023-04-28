@@ -11,7 +11,6 @@ public class Field {
     HashSet<Shot> shots = new HashSet<>();
     private Shot lastHit;
     private Shot lastShot;
-    Animation[] animations;
     int aniCounter = 0;
     private HashSet<Coordinate> coordinatesOccupiedByShips = new HashSet<>();
     private String[][] visualRepresentation;
@@ -22,7 +21,6 @@ public class Field {
 
     public Field() {
         this.ships = new Ship[10];
-        animations = new Animation[60];
     }
 
     public Shot getLastShot() {

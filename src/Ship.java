@@ -7,7 +7,6 @@ public class Ship {
     private final HashSet<Coordinate> periphery = new HashSet<>();
     private final int size;
     private boolean isHorizontal;
-    public int aniBlocks = 0;
     private int lives;
     private final boolean armored;
 
@@ -160,8 +159,6 @@ public class Ship {
             }
             System.out.println("Du hast ein Schiff mit der Länge " + getSize() + " zerstört!");
             field.shotsInPeriphery(this);
-            createAnimation(field);
-            aniBlocks = 0;
         }
     }
     public boolean destroyed(){
@@ -170,12 +167,6 @@ public class Ship {
 
     public boolean isArmored(){
         return armored;
-    }
-
-    public void createAnimation(Field field){
-        Animation animation = new Animation(this); //, field);
-        field.animations[field.aniCounter] = animation;
-        field.aniCounter++;
     }
 
     public boolean isAllowedOn(Field field){

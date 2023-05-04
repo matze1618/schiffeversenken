@@ -124,29 +124,13 @@ public class Ship {
         return allPositions;
     }
 
-    //TODO Wird hier else{return 0;} erreicht?
-    //TODO: Warum hat jeder Fall return 0?
-    //TODO: Modellierung über Klasse oder Enum, statt Informationen durch Pseudo-Zahlen abzubilden?
-    public int isAt(int x, int y) {
-        if (isHorizontal && x >= basePosition.getX() && x <= basePosition.getX() + size -1 && y == basePosition.getY()) {
-
-            if(x == basePosition.getX()) return 4;
-            else if(x == basePosition.getX() + size -1) return 6;
-            else if(x < basePosition.getX() + size -1) return 5;
-            else{return 0;}
-
-
-        } else if (!isHorizontal && y >= basePosition.getY() && y <= basePosition.getY() + size -1 && x == basePosition.getX()) {
-            if(y == basePosition.getY()) return 1;
-            else if(y == basePosition.getY() + size -1) return 3;
-            else if(y < basePosition.getY() + size -1) return 2;
-            else{return 0;}
+    public boolean isAtToBool(Coordinate coordinate){
+        for (Coordinate position : allPositions){
+            if (coordinate.equalTo(position)){
+                return true;
+            }
         }
-        return 0;
-    }
-
-    public boolean isAtToBool(int x, int y){
-        return isAt(x, y) <= 6 && isAt(x, y) >= 1;
+        return false;
     }
 
     public void getHit(Field field){

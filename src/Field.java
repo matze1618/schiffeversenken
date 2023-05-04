@@ -5,26 +5,20 @@ import java.util.Random;
 
 public class Field {
     private int size = 10;
-    boolean showAnimation = false;
     Ship[] ships;
     int addCounter = 0;
     HashSet<Shot> shots = new HashSet<>();
     private Shot lastHit;
     private Shot lastShot;
-    int aniCounter = 0;
     private HashSet<Coordinate> coordinatesOccupiedByShips = new HashSet<>();
     private String[][] visualRepresentation;
     public boolean shipsAreSet = false;
 
-    private String[] animationArray = {"؎", "؏", "#", "༚༚", "࿀", "༞", "\"", "?", "§", "%", "&", "\\", ">", "<", "⌘", "°", "^"};
+    private final String[] animationArray = {"؎", "؏", "#", "༚༚", "࿀", "༞", "\"", "?", "§", "%", "&", "\\", ">", "<", "⌘", "°", "^"};
 
 
     public Field() {
         this.ships = new Ship[10];
-    }
-
-    public Shot getLastShot() {
-        return lastShot;
     }
 
     public Shot getLastHit() {
@@ -43,6 +37,9 @@ public class Field {
         return coordinatesOccupiedByShips;
     }
 
+    public Shot getLastShot() {
+        return lastShot;
+    }
 
     public void drawWithAnimation(Ship ship) throws InterruptedException{
         setVisualRepresentation(false);
@@ -213,10 +210,7 @@ public class Field {
         visualRepresentation[coordinate.getY() + 2][coordinate.getX() + 1] = animationBlock;
     }
 
-    void placeShip(int x, int y, boolean isHorizontal, int size, boolean armored){
-        placeShip(new Ship(x, y, isHorizontal, size, armored, this));
-    }
-    void placeShip(Ship ship) {
+    void placeShipForTest(Ship ship) {
         ships[addCounter] = ship; //TODO: Ist die Reihenfolge irgendwo wichtig oder kann ich hier eine HashMap draus machen? => Ist relevant für die Eingabe und randomPlaceShip
         updateOccupiedCoordinates(ship);
     }
@@ -230,9 +224,7 @@ public class Field {
     }
 
     private void updateOccupiedCoordinates(Ship ship){
-        for (Coordinate coordinate : ship.getAllPositions()){
-            coordinatesOccupiedByShips.add(coordinate);
-        }
+        coordinatesOccupiedByShips.addAll(ship.getAllPositions());
     }
 
     public void checkGameOver(String winnerName) {
@@ -269,6 +261,11 @@ public class Field {
                 lastHit = shot;
             }
         }
-        return false; //TODO: false either way?
+        //TODO: false either way?
+        return false;
+    }
+
+    void placeShipForTest(int x, int y, boolean isHorizontal, int size, boolean armored){
+        placeShipForTest(new Ship(x, y, isHorizontal, size, armored, this));
     }
 }

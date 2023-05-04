@@ -14,96 +14,92 @@ public class Main {
     public static boolean gameOver = false;
 
     public static void main(String[] args) throws InterruptedException {
-//        String[] signsArray = {"\\", ">", "<", "°", "^", "⌘"};
-//
-//        for (String sign : signsArray) {
-//            for (int i = 0; i < 10; i++){
-//                System.out.print(sign);
-//            }
-//            System.out.println();
-//            for (int i = 0; i < 10; i++){
-//                System.out.print("~");
-//            }
-//            System.out.println();
-//        }
 
         Player player1 = new Player(ANSI_GREEN + "Frederik" + ANSI_RESET);
-        Player player2;
-
-        if(player1.opponentIsBotTry()) {
-            player2 = new Bot("Robby");
-        } else {
-            player2 = new Player();
-            player2.setNameInput(2);
-        }
+        Player player2 = new Player();
 
         player1.setGameMode(); //TODO: Nicht in Player definieren?
 
-        if(status == Status.PICKPHASEAD) {
+        if(player1.opponentIsBotTry()) {
+            player2 = new Bot("ShipGPT");
+        } else if (status == Status.PICKPHASEAD) {
+            player2 = new PlayerAD();
+            player2.setNameInput(2);
+        }
+
+        if(status == Status.PICKPHASEAD && player2 instanceof PlayerAD) {
             player1.field.setSize(0);
             player2.field.setSize(0);
-            player1.setFieldSizeCatch(player2.field);
+            ((PlayerAD)player2).setFieldSizeCatch(player1.field);
         }
 
 
         //TODO: Testing verbessern!!!
         //test(player1, player2);
 
+        while (status == status.PICKPHASE || status == status.PICKPHASEAD){
+            while (player1.inputPickTryExceptions(player2.field)) {
+            }
+            player2.switchActivePlayer = true;
+            while (player2.inputPickTryExceptions(player1.field)) {
+            }
+        }
+
         while (!gameOver) {
-            while (player1.inputTryExceptions(player2.field)) {
+            while (player1.inputShotTryExceptions(player2.field)) {
             }
-            player2.switchDraw = true;
-            while (player2.inputTryExceptions(player1.field)) {
+            player2.switchActivePlayer = true;
+            while (player2.inputShotTryExceptions(player1.field)) {
             }
-            player1.switchDraw = true;
+            player1.switchActivePlayer = true;
         }
     }
 
     static void test(Player player1, Player player2) throws InterruptedException {
-        player1.field.placeShip(0, 0, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(0, 0, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(0, 2, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(0, 2, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(0, 4, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(0, 4, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(0, 6, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(0, 6, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(0, 8, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(0, 8, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
 
-        player1.field.placeShip(7, 9, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(7, 9, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(8, 7, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(8, 7, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(8, 5, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(8, 5, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(8, 3, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(8, 3, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
-        player1.field.placeShip(9, 1, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
+        player1.field.placeShipForTest(9, 1, true, player1.ships[9 - player1.field.addCounter].getSize(), false);
         player1.field.addCounter++;
         player1.field.draw(true);
 
 
-        player2.field.placeShip(0, 0, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(0, 0, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(0, 2, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(0, 2, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(0, 4, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(0, 4, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(0, 6, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(0, 6, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(0, 8, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(0, 8, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
 
-        player2.field.placeShip(7, 9, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(7, 9, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(8, 7, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(8, 7, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(8, 5, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(8, 5, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(8, 3, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(8, 3, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
-        player2.field.placeShip(9, 1, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
+        player2.field.placeShipForTest(9, 1, true, player1.ships[9 - player2.field.addCounter].getSize(), false);
         player2.field.addCounter++;
         player2.field.draw(true);
 

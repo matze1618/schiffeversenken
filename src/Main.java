@@ -15,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Player player1 = new Player(ANSI_GREEN + "Frederik" + ANSI_RESET);
+        Player player1 = new Player(ANSI_GREEN + "Mattis" + ANSI_RESET);
         Player player2 = new Player();
 
         player1.setGameMode(); //TODO: Nicht in Player definieren?
@@ -24,7 +24,7 @@ public class Main {
             player2 = new Bot("ShipGPT");
         } else if (status == Status.PICKPHASEAD) {
             player2 = new PlayerAD();
-            player2.setNameInput(2);
+            while (!player2.setNameInput(2)){}
         }
 
         if(status == Status.PICKPHASEAD && player2 instanceof PlayerAD) {

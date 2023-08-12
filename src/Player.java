@@ -50,23 +50,27 @@ public class Player {
         }
     }
 
-    public void setNameInput(int spielerNummer) {
+    public boolean setNameInput(int spielerNummer) {
         System.out.println("Spieler " + spielerNummer + ", gib deinen Namen ein!");
         String name = scan.next();
         System.out.println(name + ", gib deine Wunschfarbe, in der dein Name angezeigt werden soll, aus den Farben (rot, grün, gelb, blau, lila, cyan oder weiß) ein!");
-        scan.next();
-        String colour = scan.next().toLowerCase();
-        colour = switch (colour) {
-            case "rot" -> Main.ANSI_RED;
-            case "grün" -> Main.ANSI_GREEN;
-            case "gelb" -> Main.ANSI_YELLOW;
-            case "blau" -> Main.ANSI_BLUE;
-            case "lila" -> Main.ANSI_PURPLE;
-            case "cyan" -> Main.ANSI_CYAN;
-            case "weiß" -> Main.ANSI_BG_WHITE;
-            default -> scan.next().toLowerCase();
+        scan.nextLine();
+        String colour = scan.nextLine();
+        switch (colour.toLowerCase()) {
+            case "rot" -> colour = Main.ANSI_RED;
+            case "grün" -> colour = Main.ANSI_GREEN;
+            case "gelb" -> colour = Main.ANSI_YELLOW;
+            case "blau" -> colour = Main.ANSI_BLUE;
+            case "lila" -> colour = Main.ANSI_PURPLE;
+            case "cyan" -> colour = Main.ANSI_CYAN;
+            case "weiß" -> colour = Main.ANSI_BG_WHITE;
+            default -> {
+                System.out.println("Die Eingabe war ungültig. Versuche es erneut.");
+                return false;
+            }
         };
         setName(name, colour);
+        return true;
     }
 
     public void setName(String name, String colour) {

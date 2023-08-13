@@ -8,7 +8,6 @@ public class Field {
     Ship[] ships;
     int addCounter = 0;
     HashSet<Shot> shots = new HashSet<>();
-    private Shot lastHit;
     private Shot lastShot;
     private HashSet<Coordinate> coordinatesOccupiedByShips = new HashSet<>();
     private String[][] visualRepresentation;
@@ -19,10 +18,6 @@ public class Field {
 
     public Field() {
         this.ships = new Ship[10];
-    }
-
-    public Shot getLastHit() {
-        return lastHit;
     }
 
     public int getSize() {
@@ -143,7 +138,7 @@ public class Field {
 
         visualRepresentation[1][size + 2] = "   Diese Schiffe musst Du noch treffen:";
         for (Ship ship : ships) {
-            if (!ship.destroyed()){
+            if (!ship.isDestroyed()){
                 visualRepresentation[ship.getSize() + 2][size + 2] = visualRepresentation[ship.getSize() + 2][size + 2] + sizeToString.get(ship.getSize());
             }
         }
@@ -218,9 +213,6 @@ public class Field {
     void placeShot(Shot shot){
         shots.add(shot);
         lastShot = shot;
-        if (shot.isHit()){
-            lastHit = shot;
-        }
     }
 
     private void updateOccupiedCoordinates(Ship ship){
@@ -231,7 +223,7 @@ public class Field {
         if (!Main.gameOver) {
             Main.gameOver = true;
             for (int i = 0; i < addCounter; i++) {
-                if (!ships[i].destroyed()) {
+                if (!ships[i].isDestroyed()) {
                     Main.gameOver = false;
                 }
             }
@@ -242,30 +234,43 @@ public class Field {
         }
     }
 
-    void shotsInPeriphery(Ship ship) {
+    void placeThePeripheryOf(Ship ship) {
         for (Coordinate coordinate : ship.getPeriphery()){
             placeShotAutomated(coordinate);
         }
     }
 
-    boolean placeShotAutomated(Coordinate coordinate) {
-        if(coordinate.isValid(this.size)) {
+    private void placeShotAutomated(Coordinate coordinate) {
+        if(coordinate.isWithinField(this.size)) {
             for (Shot shot : shots) {
                 if(shot.isAt(coordinate)) {
-                    return false;
+                    return;
                 }
             }
             Shot shot = new Shot(coordinate, false, this);
             shots.add(shot);
-            if (shot.isHit()){
-                lastHit = shot;
-            }
         }
-        //TODO: false either way?
-        return false;
     }
 
     void placeShipForTest(int x, int y, boolean isHorizontal, int size, boolean armored){
         placeShipForTest(new Ship(x, y, isHorizontal, size, armored, this));
+    }
+
+    public Ship shipAt(Coordinate coordinate) {
+        for (Ship ship : ships) {
+            if (ship.isAtToBool(coordinate)) {
+                return ship;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasShotsAt(Coordinate coordinate) {
+        for (Shot shot : shots) {
+            if (shot.isAt(coordinate)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

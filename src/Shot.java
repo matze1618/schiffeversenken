@@ -35,7 +35,8 @@ public class Shot {
         return isHit;
     }
 
-    private boolean checkHit(Field field){ //TODO: Make an attribute out of this to only check once. If it is a hit, it will always be a hit.
+    //TODO: This shouldn't decrement the ships lives. While it may reduce redundancies, it makes the code harder to understand. Refactor!
+    private boolean checkHit(Field field){
         for(int i = 0; i < field.addCounter; i++){
             if(field.ships[i].isAtToBool(position)){
                 field.ships[i].getHit(field);

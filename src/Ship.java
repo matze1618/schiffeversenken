@@ -70,7 +70,7 @@ public class Ship {
             potentialPeriphery.add(new Coordinate(basePosition.getX(), basePosition.getY() + size)); // drunter
         }
         for (Coordinate coordinate : potentialPeriphery){
-            if (coordinate.isValid(field.getSize())){
+            if (coordinate.isWithinField(field.getSize())){
                 periphery.add(coordinate);
             }
         }
@@ -135,17 +135,17 @@ public class Ship {
 
     public void getHit(Field field){
         lives--;
-        if(destroyed()){
+        if(isDestroyed()){
             try {
                 field.drawWithAnimation(this);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             System.out.println("Du hast ein Schiff mit der Länge " + getSize() + " zerstört!");
-            field.shotsInPeriphery(this);
+            field.placeThePeripheryOf(this);
         }
     }
-    public boolean destroyed(){
+    public boolean isDestroyed(){
         return lives <= 0;
     }
 

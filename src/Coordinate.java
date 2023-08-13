@@ -19,7 +19,11 @@ public class Coordinate {
         return (x == coordinate.getX() && y == coordinate.getY());
     }
 
-    public boolean isValid(int size){
+    public boolean isWithinField(int size){
         return (x >= 0 && x < size && y >= 0 && y < size);
+    }
+
+    public Coordinate withOffset(Coordinate offset) {
+        return new Coordinate(x + offset.getX(), y + offset.getY());
     }
 }

@@ -37,6 +37,7 @@ public class Main {
         //TODO: Testing verbessern!!!
         //test(player1, player2);
 
+        //TODO: Refactor this to use a global variable for defining which players turn it is => removes empty while-loops
         while (status == status.PICKPHASE || status == status.PICKPHASEAD){
             while (player1.inputPickTryExceptions(player2.field)) {
             }

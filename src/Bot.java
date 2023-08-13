@@ -1,22 +1,30 @@
+import java.util.HashMap;
 import java.util.Random;
-//import java.util.concurrent.TimeUnit;
 
 public class Bot extends PlayerAD{
     private Shot lastShot;
     private Shot lastHit;
-    private Coordinate baseOfCurrentShip;
-    private boolean shipFound = false;
-
-    //TODO: Wird wahrscheinlich irgendwo fälschlicherweise nicht zurück auf false gesetzt!
-    private boolean directionFound = false;
+    private Shot firstHitOnCurrentShip;
+    private boolean directionKnown = false;
     private char direction = 'l';
-    private boolean switchDirection = false;
+    private HashMap<Character, Coordinate> directionToOffset = new HashMap<>();
 
     Random random = new Random();
+
+    //TODO: Make Field enemy a class variable as its used almost everywhere anyway!
     Bot(String name) {
         this.name = Main.ANSI_RED + name + Main.ANSI_RESET;
+        setOffsetMap();
     }
 
+    private void setOffsetMap() {
+        directionToOffset.put('l', new Coordinate(-1, 0));
+        directionToOffset.put('u', new Coordinate(0, -1));
+        directionToOffset.put('r', new Coordinate(1, 0));
+        directionToOffset.put('d', new Coordinate(0, 1));
+    }
+
+    //TODO: What happens here?
     @Override
     public boolean inputShotTryExceptions(Field enemy) {
         if(Main.status == Main.Status.PICKPHASE || Main.status == Main.Status.PICKPHASEAD){
@@ -41,214 +49,108 @@ public class Bot extends PlayerAD{
         return randomPlaceShip(enemy);
     }
 
-
-    public boolean inputTryBotFailureException(Field enemy) throws InterruptedException, BotFailureException {
-        if(shipFound) {
-            return tryShotWithShipFound(enemy);
-        } else {
-            return tryRandomShot(enemy, new Coordinate(random.nextInt(enemy.getSize()), random.nextInt(enemy.getSize())));
-        }
-    }
-
-    public boolean tryShotWithShipFound(Field enemy) throws BotFailureException {
-        if (!directionFound){
-            return tryFindDirection(enemy);
-        } else {
-            return tryShotWithDirection(enemy);
-        }
-    }
-
-    private boolean tryFindDirection(Field enemy) throws BotFailureException {
-        switch (direction){
-            case 'l':
-                if (!isValidTry(new Coordinate(lastHit.getX() - 1, lastHit.getY()), enemy)) {
-                    direction = 'u';
-                    return true;
-                }
-                if(trySmartShot(enemy, lastHit.getX() - 1, lastHit.getY())){
-                    directionFound = true;
-                    return true;
-                } else {
-                    direction = 'u';
-                    return false;
-                }
-            case 'u':
-                if (!isValidTry(new Coordinate(lastHit.getX(), lastHit.getY() - 1), enemy)) {
-                    direction = 'r';
-                    return true;
-                }
-                if (trySmartShot(enemy, lastHit.getX(), lastHit.getY() - 1)) {
-                    directionFound = true;
-                    return true;
-                } else {
-                    direction = 'r';
-                    return false;
-                }
-            case 'r':
-                if (!isValidTry(new Coordinate(lastHit.getX() + 1, lastHit.getY()), enemy)) {
-                    direction = 'd';
-                    return true;
-                }
-                if (trySmartShot(enemy, lastHit.getX() + 1, lastHit.getY())) {
-                    directionFound = true;
-                    return true;
-                } else {
-                    direction = 'd';
-                    return false;
-                }
-            case 'd':
-                if (!isValidTry(new Coordinate(lastHit.getX(), lastHit.getY() + 1), enemy)) {
-                    throw new BotFailureException();
-                }
-                if (trySmartShot(enemy, lastHit.getX(), lastHit.getY() + 1)) {
-                    directionFound = true;
-                    return true;
-                } else {
-                    throw new BotFailureException();
-                }
-            default:
-                throw new BotFailureException();
-        }
-    }
-
-    private boolean tryShotWithDirection(Field enemy) throws BotFailureException {
-        if(!switchDirection) {
-            switch (direction) {
-                case 'l':
-                    if (!isValidTry(new Coordinate(lastHit.getX() - 1, lastHit.getY()), enemy)) {
-                        direction = 'r';
-                        return true;
-                    }
-                    return trySmartShot(enemy, lastHit.getX() - 1, lastHit.getY());
-                case 'u':
-                    if (!isValidTry(new Coordinate(lastHit.getX(), lastHit.getY() - 1), enemy)) {
-                        direction = 'd';
-                        return true;
-                    }
-                    return trySmartShot(enemy, lastHit.getX(), lastHit.getY() - 1);
-                case 'r':
-                    if (!isValidTry(new Coordinate(lastHit.getX() + 1, lastHit.getY()), enemy)) {
-                        direction = 'l';
-                        return true;
-                    }
-                    return trySmartShot(enemy, lastHit.getX() + 1, lastHit.getY());
-                case 'd':
-                    if (!isValidTry(new Coordinate(lastHit.getX(), lastHit.getY() + 1), enemy)) {
-                        direction = 'u';
-                        return true;
-                    }
-                    return trySmartShot(enemy, lastHit.getX(), lastHit.getY() + 1);
-                default:
-                    throw new BotFailureException();
+    private boolean inputTryBotFailureException(Field enemy) throws InterruptedException, BotFailureException {
+        if(lastHit == null || enemy.shipAt(lastHit.getPosition()).isDestroyed()) {
+            directionKnown = false;
+            return shootRandomly(enemy);
+        } else if (directionKnown) {
+            if (!lastShot.isHit()) {
+                reverseDirection();
             }
+            return continueInCurrentDirection(enemy);
         } else {
-            switch (direction){
-                case 'l':
-                    if (!isValidTry(new Coordinate(baseOfCurrentShip.getX() - 1, baseOfCurrentShip.getY()), enemy)) {
-                        throw new BotFailureException();
-                    }
-                    return trySmartShot(enemy, baseOfCurrentShip.getX() - 1, baseOfCurrentShip.getY());
-                case 'u':
-                    if (!isValidTry(new Coordinate(baseOfCurrentShip.getX(), baseOfCurrentShip.getY() - 1), enemy)) {
-                        throw new BotFailureException();
-                    }
-                    return trySmartShot(enemy, baseOfCurrentShip.getX(), baseOfCurrentShip.getY() - 1);
-                case 'r':
-                    if (!isValidTry(new Coordinate(baseOfCurrentShip.getX() + 1, baseOfCurrentShip.getY()), enemy)) {
-                        throw new BotFailureException();
-                    }
-                    return trySmartShot(enemy, baseOfCurrentShip.getX() + 1, baseOfCurrentShip.getY());
-                case 'd':
-                    if (!isValidTry(new Coordinate(baseOfCurrentShip.getX(), baseOfCurrentShip.getY() + 1), enemy)) {
-                        throw new BotFailureException();
-                    }
-                    return trySmartShot(enemy, baseOfCurrentShip.getX(), baseOfCurrentShip.getY() + 1);
-                default:
-                    throw new BotFailureException();
-            }
-
+            return findDirection(enemy);
         }
     }
 
-    public boolean tryRandomShot(Field enemy, Coordinate coordinate) {
-        if (!isValidTry(coordinate, enemy)) {
-            return true;
-        }
-
-        Shot shot = new Shot(coordinate, true, enemy);
+    private boolean shootRandomly(Field enemy) {
+        Coordinate validCoordinateForNewShot = getValidCoordinateForNewShot(enemy);
+        Shot shot = new Shot(validCoordinateForNewShot, true, enemy);
         enemy.shots.add(shot);
         lastShot = shot;
-        enemy.draw(false);
 
-        if (shot.isHit()){
-            switchDirection = false;
-            for(Ship ship: enemy.ships) {
-                if (ship.isAtToBool(coordinate)) {
-                    if(!ship.destroyed()) {
-                        lastHit = shot;
-                        baseOfCurrentShip = lastHit.getPosition();
-                        shipFound = true;
-                    } else {
-                        enemy.checkGameOver(name);
-                        shipFound = false;
-                        directionFound = false;
-                        direction = 'l';
-                    }
-                    enemy.draw(false);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    //here false indicates a miss or outOfBounds
-    private boolean trySmartShot(Field enemy, int x, int y) {
-        Coordinate coordinate = new Coordinate(x, y);
-
-        if (!coordinate.isValid(enemy.getSize())) {
-            return false;
-        }
-
-        Shot shot = new Shot(coordinate, true, enemy);
-        enemy.shots.add(shot);
-        lastShot = shot;
         enemy.draw(false);
 
         if (shot.isHit()) {
-            switchDirection = false;
-            //TODO: über Instanzvariable Ship currentShip lösen
-            for(Ship ship: enemy.ships) {
-                if (ship.isAtToBool(coordinate)) {
-                    lastHit = shot;
-                    if(ship.destroyed()) {
-                        enemy.checkGameOver(name);
-                        shipFound = false;
-                        directionFound = false;
-                        direction = 'l';
-                    }
-                    enemy.draw(false);
-                    return true;
-                }
-            }
+            lastHit = shot;
+            firstHitOnCurrentShip = shot;
+            return true;
         }
         return false;
     }
 
-    private boolean isValidTry(Coordinate coordinate, Field enemy){
-        if(!coordinate.isValid(enemy.getSize())) {
-            switchDirection = true;
-            return false;
-        }
+    private Coordinate getValidCoordinateForNewShot(Field enemy) {
+        boolean foundValidCoodinate = false;
+        int randomX;
+        int randomY;
+        Coordinate resultCoordinate = new Coordinate(0,0);
 
-        for (Shot shot : enemy.shots){
-            if (shot.isAt(coordinate)) {
-                switchDirection = true;
-                return false;
+        while (!foundValidCoodinate) {
+            randomX = random.nextInt(enemy.getSize());
+            randomY = random.nextInt(enemy.getSize());
+            resultCoordinate = new Coordinate(randomX, randomY);
+            if (!enemy.hasShotsAt(resultCoordinate)) {
+                foundValidCoodinate = true;
             }
         }
-        //TODO: Ist das richtig?
-        switchDirection = false;
-        return true;
+        return resultCoordinate;
+    }
+
+    private boolean continueInCurrentDirection(Field enemy) {
+        Shot shot = new Shot(lastHit.getPosition().withOffset(directionToOffset.get(direction)), true, enemy);
+        enemy.shots.add(shot);
+        lastShot = shot;
+
+        enemy.draw(false);
+
+        if (shot.isHit()) {
+            lastHit = shot;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void reverseDirection() {
+        switch (direction) {
+            case 'l' -> direction = 'r';
+            case 'u' -> direction = 'd';
+            case 'r' -> direction = 'l';
+            case 'd' -> direction = 'u';
+        }
+
+        lastHit = firstHitOnCurrentShip;
+    }
+
+    private boolean findDirection(Field enemy) {
+        while (!isValidTry(enemy)) {
+            incrementDirection();
+        }
+
+        Shot shot = new Shot(lastHit.getPosition().withOffset(directionToOffset.get(direction)), true, enemy);
+        enemy.shots.add(shot);
+        lastShot = shot;
+
+        enemy.draw(false);
+
+        if (shot.isHit()) {
+            lastHit = shot;
+            directionKnown = true;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isValidTry(Field enemy) {
+        return (!enemy.hasShotsAt(lastHit.getPosition().withOffset(directionToOffset.get(direction))) && lastHit.getPosition().withOffset(directionToOffset.get(direction)).isWithinField(enemy.getSize())); //TODO: Can I make this sleaker?
+    }
+
+    private void incrementDirection() {
+        switch (direction) {
+            case 'l' -> direction = 'u';
+            case 'u' -> direction = 'r';
+            case 'r' -> direction = 'd';
+            case 'd' -> direction = 'l';
+        }
     }
 }

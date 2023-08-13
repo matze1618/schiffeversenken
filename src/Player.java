@@ -68,7 +68,7 @@ public class Player {
                 System.out.println("Die Eingabe war ungültig. Versuche es erneut.");
                 return false;
             }
-        };
+        }
         setName(name, colour);
         return true;
     }

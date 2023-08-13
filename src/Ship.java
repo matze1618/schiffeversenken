@@ -104,14 +104,6 @@ public class Ship {
         setPeriphery(field);
     }
 
-    public int getXCoord() {
-        return basePosition.getX();
-    }
-
-    public int getYCoord() {
-        return basePosition.getY();
-    }
-
     public int getSize() {
         return size;
     }
@@ -154,7 +146,7 @@ public class Ship {
     }
 
     public boolean isAllowedOn(Field field){
-        if (Objects.isNull(isHorizontal) || Objects.isNull(basePosition)){
+        if (Objects.isNull(basePosition)){
             return false;
         }
         for (Coordinate position : periphery){
